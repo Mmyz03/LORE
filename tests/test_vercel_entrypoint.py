@@ -1,7 +1,7 @@
 """
 Test Suite: Root Application Entry Point & Native Flask Routing
 Verifies that:
-1. Root index.py and app.py properly expose the canonical Flask `app` object.
+1. Root app.py loads via importlib under module name 'app' (Vercel runtime simulation).
 2. Direct root route '/' returns 200 OK with the LORE homepage.
 3. Static files (CSS, JS, SVG) are properly served by Flask.
 4. Info and Categories endpoints return full dataset metrics (520 stories across 13 genres).
@@ -12,17 +12,30 @@ import os
 import sys
 import json
 import unittest
+import importlib.util
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from app import app
+# Simulate Vercel runtime loading root app.py as module 'app'
+ROOT_APP_FILE = os.path.join(PROJECT_ROOT, "app.py")
+spec = importlib.util.spec_from_file_location("app", ROOT_APP_FILE)
+app_module = importlib.util.module_from_spec(spec)
+sys.modules["app"] = app_module
+spec.loader.exec_module(app_module)
+
+app = app_module.app
 
 
 class TestRootFlaskEntryPoint(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
+
+    def test_flask_instance(self):
+        """Verify root app.py exports a valid Flask instance."""
+        import flask
+        self.assertIsInstance(app, flask.Flask)
 
     def test_root_route(self):
         """Visiting '/' directly should return 200 OK with the LORE homepage."""
