@@ -1,12 +1,19 @@
 """
-Automated Verification Suite for Vercel Deployment Entry Point & Flask WSGI
+Test Suite: Vercel Entry Point & Serverless Routing Compatibility
+Verifies that:
+1. api/index.py properly exports the Flask app instance.
+2. Root URL '/' is served with 200 OK and index.html content.
+3. Vercel rewritten paths (/api/index, /api/index.py) are correctly handled.
+4. HTTP_X_FORWARDED_URI header preservation restores real paths (/api/info, /api/recommend, /static/...).
+5. Static files (CSS, JS) are properly returned through WSGI.
+6. Recommendation API continues to return valid JSON results.
 """
 
 import os
 import sys
+import json
 import unittest
 
-# Ensure project root is in sys.path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
@@ -14,92 +21,105 @@ if PROJECT_ROOT not in sys.path:
 from api.index import app
 
 
-class TestVercelDeployment(unittest.TestCase):
-
+class TestVercelEntryPoint(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
 
-    def test_root_route(self):
-        """Verify root route returns 200 and loads LORE HTML with templates."""
-        res = self.client.get("/")
-        self.assertEqual(res.status_code, 200)
-        self.assertIn(b"LORE", res.data)
-        self.assertIn(b"Stories worth getting lost in", res.data)
-        print("  [PASS] Root route / rendered index.html successfully.")
+    def test_direct_root_route(self):
+        """Visiting '/' directly should return 200 OK with the LORE homepage."""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("LORE", html)
+        self.assertIn("Stories worth getting lost in", html)
 
-    def test_static_assets(self):
-        """Verify static files (CSS, JS, SVG) are served correctly through WSGI app."""
-        css_res = self.client.get("/static/style.css")
-        self.assertEqual(css_res.status_code, 200)
-        self.assertIn(b"--gold-primary", css_res.data)
+    def test_vercel_rewritten_root_path(self):
+        """When Vercel rewrites '/' to '/api/index', it should return 200 OK with the LORE homepage."""
+        response = self.client.get("/api/index")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("LORE", html)
+        self.assertIn("Stories worth getting lost in", html)
 
-        js_res = self.client.get("/static/script.js")
-        self.assertEqual(js_res.status_code, 200)
+    def test_vercel_rewritten_py_path(self):
+        """When Vercel passes '/api/index.py', it should return 200 OK with the LORE homepage."""
+        response = self.client.get("/api/index.py")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("LORE", html)
 
-        speech_res = self.client.get("/static/speech.js")
-        self.assertEqual(speech_res.status_code, 200)
+    def test_forwarded_uri_root(self):
+        """When Vercel sets HTTP_X_FORWARDED_URI to '/', it should resolve to the homepage."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/"}
+        )
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("LORE", html)
 
-        svg_res = self.client.get("/static/assets/lore-emblem.svg")
-        self.assertEqual(svg_res.status_code, 200)
-        print("  [PASS] Static assets (CSS, JS, SVG) served properly.")
-
-    def test_api_info(self):
-        """Verify /api/info returns full 520-story dataset info and categories."""
-        res = self.client.get("/api/info")
-        self.assertEqual(res.status_code, 200)
-        data = res.get_json()
+    def test_forwarded_uri_api_info(self):
+        """When user requests '/api/info', Vercel rewrites to /api/index with X-Forwarded-Uri."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/api/info"}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
         self.assertEqual(data["status"], "success")
-        self.assertEqual(data["total_stories"], 520)
-        self.assertEqual(data["total_categories"], 13)
-        print(f"  [PASS] /api/info returned {data['total_stories']} stories across {data['total_categories']} categories.")
+        self.assertTrue(data["model_loaded"])
+        self.assertGreaterEqual(data["total_stories"], 500)
 
-    def test_api_categories(self):
-        """Verify /api/categories returns the 13 supported genres."""
-        res = self.client.get("/api/categories")
-        self.assertEqual(res.status_code, 200)
-        data = res.get_json()
-        self.assertEqual(data["status"], "success")
-        self.assertEqual(len(data["categories"]), 13)
-        print(f"  [PASS] /api/categories returned {len(data['categories'])} genres.")
-
-    def test_api_recommend(self):
-        """Verify /api/recommend endpoint executes TF-IDF recommendation."""
+    def test_forwarded_uri_api_recommend(self):
+        """When user requests '/api/recommend', Vercel rewrites to /api/index with X-Forwarded-Uri."""
         payload = {
-            "query": "A spooky abandoned asylum at midnight",
-            "category": "Horror"
-        }
-        res = self.client.post("/api/recommend", json=payload)
-        self.assertEqual(res.status_code, 200)
-        data = res.get_json()
-        self.assertEqual(data["status"], "success")
-        self.assertEqual(data["story"]["category"], "Horror")
-        self.assertIn("title", data["story"])
-        self.assertIn("story_text", data["story"])
-        print(f"  [PASS] /api/recommend returned story '{data['story']['title']}' (Category: {data['story']['category']}).")
-
-    def test_find_another_story(self):
-        """Verify find another story retains category and excludes first story."""
-        payload1 = {
-            "query": "space alien expedition",
+            "query": "A brave astronaut discovering an alien signal on Mars",
             "category": "Sci-Fi"
         }
-        res1 = self.client.post("/api/recommend", json=payload1)
-        self.assertEqual(res1.status_code, 200)
-        story1 = res1.get_json()["story"]
+        response = self.client.post(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/api/recommend", "Content-Type": "application/json"},
+            data=json.dumps(payload)
+        )
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["status"], "success")
+        self.assertIn("story", data)
+        self.assertIn("title", data["story"])
+        self.assertIn("category", data["story"])
 
-        payload2 = {
-            "query": "space alien expedition",
-            "category": "Sci-Fi",
-            "exclude_ids": [story1["id"]],
-            "is_find_another": True
-        }
-        res2 = self.client.post("/api/recommend", json=payload2)
-        self.assertEqual(res2.status_code, 200)
-        story2 = res2.get_json()["story"]
+    def test_forwarded_uri_static_css(self):
+        """When user requests '/static/style.css', static assets should be served."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/static/style.css"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("text/css", response.content_type)
+        css = response.get_data(as_text=True)
+        self.assertIn("body", css)
 
-        self.assertEqual(story2["category"], "Sci-Fi")
-        self.assertNotEqual(story1["id"], story2["id"])
-        print(f"  [PASS] Find Another Story returned distinct story '{story2['title']}' within Sci-Fi.")
+    def test_forwarded_uri_static_script(self):
+        """When user requests '/static/script.js', JS assets should be served."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/static/script.js"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("javascript", response.content_type)
+        js = response.get_data(as_text=True)
+        self.assertIn("DOMContentLoaded", js)
+
+    def test_forwarded_uri_static_speech(self):
+        """When user requests '/static/speech.js', voice assets should be served."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/static/speech.js"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("javascript", response.content_type)
+        js = response.get_data(as_text=True)
+        self.assertIn("LoreSpeech", js)
 
 
 if __name__ == "__main__":

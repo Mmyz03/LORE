@@ -62,6 +62,8 @@ init_recommender()
 
 
 @app.route("/")
+@app.route("/api/index")
+@app.route("/api/index.py")
 def index():
     """Renders the main story discovery web application."""
     return render_template("index.html")
