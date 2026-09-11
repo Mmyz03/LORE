@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // State Variables for Recommendation & Duplicate Prevention
     let selectedCategory = "";
+    let sessionCategory = "";
     let currentStory = null;
     let shownStoryIds = [];
     let lastQuery = "";
@@ -75,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
     btnClearQuery.addEventListener("click", () => {
         storyQueryInput.value = "";
         btnClearQuery.style.display = "none";
+        sessionCategory = "";
+        shownStoryIds = [];
         storyQueryInput.focus();
     });
 
@@ -100,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnClearQuery.style.display = "block";
             // New prompt implies fresh recommendation
             shownStoryIds = [];
+            sessionCategory = "";
             handleFindStory(false);
         });
     });
@@ -115,6 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 // Select category
                 selectedCategory = category;
+                sessionCategory = category;
                 moodCards.forEach((c) => c.classList.remove("active"));
                 card.classList.add("active");
 
@@ -135,15 +140,78 @@ document.addEventListener("DOMContentLoaded", () => {
         clearCategorySelection();
     });
 
-    // "Copy Story" Action
+    // "Copy Story" Action with Robust Mobile HTTP Fallback & Visual Button Feedback
+    async function copyStoryToClipboard(title, storyText) {
+        const textToCopy = `${title}\n\n${storyText}`.trim();
+        let success = false;
+
+        // 1. Try modern navigator.clipboard if available (desktop localhost / HTTPS)
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                success = true;
+            } catch (err) {
+                console.warn("[LORE Copy] navigator.clipboard failed, using mobile fallback:", err);
+                success = false;
+            }
+        }
+
+        // 2. Reliable Fallback for Mobile HTTP (document.execCommand('copy'))
+        if (!success) {
+            try {
+                const tempTextarea = document.createElement("textarea");
+                tempTextarea.value = textToCopy;
+                tempTextarea.setAttribute("readonly", "");
+                tempTextarea.style.position = "fixed";
+                tempTextarea.style.top = "0";
+                tempTextarea.style.left = "-9999px";
+                tempTextarea.style.width = "2em";
+                tempTextarea.style.height = "2em";
+                tempTextarea.style.padding = "0";
+                tempTextarea.style.border = "none";
+                tempTextarea.style.outline = "none";
+                tempTextarea.style.boxShadow = "none";
+                tempTextarea.style.background = "transparent";
+                tempTextarea.style.fontSize = "16px"; // Prevents iOS Safari auto-zoom
+
+                document.body.appendChild(tempTextarea);
+                tempTextarea.focus();
+                tempTextarea.select();
+                tempTextarea.setSelectionRange(0, textToCopy.length); // Required for iOS Safari
+
+                success = document.execCommand("copy");
+                document.body.removeChild(tempTextarea);
+            } catch (err) {
+                console.error("[LORE Copy] execCommand fallback failed:", err);
+                success = false;
+            }
+        }
+
+        return success;
+    }
+
     btnCopyStory.addEventListener("click", async () => {
         if (!currentStory) return;
-        const textToCopy = `${currentStory.title}\nCategory: ${currentStory.category}\nTheme: ${currentStory.theme}\nSetting: ${currentStory.setting}\nMood: ${currentStory.mood}\n\n${currentStory.story_text}`;
-        try {
-            await navigator.clipboard.writeText(textToCopy);
+
+        const originalHtml = btnCopyStory.innerHTML;
+        const copied = await copyStoryToClipboard(currentStory.title, currentStory.story_text);
+
+        if (copied) {
+            btnCopyStory.classList.add("copied");
+            btnCopyStory.innerHTML = `
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>✓ Copied</span>
+            `;
             showToast("Story copied to clipboard!", "success");
-        } catch (err) {
-            showToast("Failed to copy text", "error");
+
+            setTimeout(() => {
+                btnCopyStory.classList.remove("copied");
+                btnCopyStory.innerHTML = originalHtml;
+            }, 2200);
+        } else {
+            showToast("Unable to copy. Please select and copy the story manually.", "error");
         }
     });
 
@@ -220,13 +288,13 @@ document.addEventListener("DOMContentLoaded", () => {
     async function handleFindStory(isFindingAnother = false) {
         let query = storyQueryInput.value.trim();
 
-        // If clicking 'Find Another Story', ensure we preserve the original query even if input was touched
+        // If clicking 'Find Another Story', ensure we preserve the original query and locked session category
         if (isFindingAnother && !query && lastQuery) {
             query = lastQuery;
             storyQueryInput.value = lastQuery;
         }
 
-        if (!query && !selectedCategory) {
+        if (!query && !selectedCategory && !sessionCategory) {
             showToast("Please enter what you'd like to read or select a mood.", "error");
             storyQueryInput.focus();
             return;
@@ -237,14 +305,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!isFindingAnother) {
             if (!isSameQuery) {
-                // User changed their query or category -> Reset duplicate exclusion history
+                // User changed their query or category -> Reset duplicate exclusion history and session category
                 shownStoryIds = [];
+                sessionCategory = selectedCategory || "";
             }
         }
 
         // Save current query state
         lastQuery = query;
         lastSelectedCategory = selectedCategory;
+
+        // When finding another story, strictly preserve the resolved sessionCategory
+        const categoryToSend = isFindingAnother 
+            ? (sessionCategory || selectedCategory || null)
+            : (selectedCategory || null);
 
         // Stop any active narration when requesting another story or generating new query
         if (window.LoreSpeech) {
@@ -260,8 +334,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     query: query,
-                    category: selectedCategory || null,
-                    exclude_ids: shownStoryIds
+                    category: categoryToSend,
+                    exclude_ids: shownStoryIds.slice(-15),
+                    is_find_another: isFindingAnother
                 })
             });
 
@@ -273,12 +348,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
             currentStory = data.story;
 
-            // Track shown story ID to avoid immediate repetition
-            if (currentStory.id && !shownStoryIds.includes(currentStory.id)) {
-                shownStoryIds.push(currentStory.id);
+            // Update session category from resolved backend category
+            if (data.category) {
+                sessionCategory = data.category;
+            } else if (currentStory && currentStory.category) {
+                sessionCategory = currentStory.category;
             }
 
-            // Render the story into the DOM
+            // Track shown story ID to avoid repetition (capped at rolling 15 items)
+            if (currentStory.id && !shownStoryIds.includes(currentStory.id)) {
+                shownStoryIds.push(currentStory.id);
+                if (shownStoryIds.length > 20) {
+                    shownStoryIds = shownStoryIds.slice(-15);
+                }
+            }
+
+            // Render the story into the DOM using DocumentFragment
             renderStoryResult(data);
 
             // Hide loader and activate Story Section
@@ -298,9 +383,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             showToast(isFindingAnother ? "Here is another story for you!" : "Story retrieved successfully!", "success");
         } catch (error) {
-            console.error(error);
+            console.error("[LORE Error]", error);
             showLoadingState(false);
-            showErrorState(error.message);
+            const userFriendlyMsg = (error && error.message && !error.message.includes("failed:") && !error.message.includes("TypeError"))
+                ? error.message 
+                : "Something went wrong while finding your story. Please try again.";
+            showErrorState(userFriendlyMsg);
         }
     }
 
@@ -326,7 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
         storySettingTag.textContent = story.setting || "Unspecified";
         storyMoodTag.textContent = story.mood || "Atmospheric";
 
-        // Story Body Text (Rendered as structured paragraphs for reading & narration chunking)
+        // Story Body Text (Rendered as structured paragraphs using DocumentFragment)
         renderStoryParagraphs(story.story_text);
 
         // Initialize voice narration engine with the retrieved story
@@ -338,6 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
         storyRelevanceScore.textContent = `${data.relevance_percentage || 92}% Match`;
         storyReasonsContainer.innerHTML = "";
 
+        const reasonsFragment = document.createDocumentFragment();
         reasons.forEach((r) => {
             const tag = document.createElement("div");
             tag.className = "reason-tag";
@@ -345,12 +434,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="reason-title">&#10003; ${escapeHtml(r.label)}</span>
                 <span class="reason-note">${escapeHtml(r.detail)}</span>
             `;
-            storyReasonsContainer.appendChild(tag);
+            reasonsFragment.appendChild(tag);
         });
+        storyReasonsContainer.appendChild(reasonsFragment);
     }
 
     function renderStoryParagraphs(text) {
         storyTextDisplay.innerHTML = "";
+        const fragment = document.createDocumentFragment();
         const rawParagraphs = (text || "").split(/\n+/).filter(p => p.trim().length > 0);
 
         if (rawParagraphs.length <= 1 && (text || "").length > 250) {
@@ -375,7 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 p.className = "story-paragraph";
                 p.id = `story-p-${idx}`;
                 p.textContent = chunkText;
-                storyTextDisplay.appendChild(p);
+                fragment.appendChild(p);
             });
         } else {
             rawParagraphs.forEach((paraText, idx) => {
@@ -383,9 +474,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 p.className = "story-paragraph";
                 p.id = `story-p-${idx}`;
                 p.textContent = paraText;
-                storyTextDisplay.appendChild(p);
+                fragment.appendChild(p);
             });
         }
+        storyTextDisplay.appendChild(fragment);
     }
 
     function showLoadingState(isLoading) {
@@ -429,6 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function clearCategorySelection() {
         selectedCategory = "";
+        sessionCategory = "";
         lastSelectedCategory = "";
         shownStoryIds = [];
         moodCards.forEach((c) => c.classList.remove("active"));

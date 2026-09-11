@@ -122,6 +122,7 @@ def recommend_story():
     query = data.get("query", "").strip()
     selected_category = data.get("category", None)
     exclude_ids = data.get("exclude_ids", [])
+    is_find_another = bool(data.get("is_find_another", False))
 
     if not query and not selected_category:
         return jsonify({
@@ -134,16 +135,18 @@ def recommend_story():
         result = RECOMMENDER.recommend(
             query=query,
             selected_category=selected_category,
-            exclude_ids=exclude_ids
+            exclude_ids=exclude_ids,
+            is_find_another=is_find_another
         )
         elapsed_ms = round((time.time() - start_time) * 1000, 2)
         result["latency_ms"] = elapsed_ms
         return jsonify(result)
 
     except Exception as e:
+        print(f"[!] Technical Recommendation Error: {e}", file=sys.stderr)
         return jsonify({
             "status": "error",
-            "message": f"Story recommendation failed: {str(e)}"
+            "message": "Something went wrong while finding your story. Please try again."
         }), 500
 
 
@@ -197,5 +200,4 @@ def get_evaluation_metrics():
 
 
 if __name__ == "__main__":
-    print("[*] Starting AI Story Recommender Flask App on http://127.0.0.1:5000 ...")
-    app.run(host="127.0.0.1", port=5000, debug=False, use_reloader=False)
+    app.run(host="0.0.0.0", port=5000)
