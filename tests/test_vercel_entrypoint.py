@@ -1,7 +1,7 @@
 """
-Test Suite: Root Application Entry Point & Native Flask Routing
+Test Suite: LORE Flask Application & Vercel Native Entry Point (app/app.py)
 Verifies that:
-1. Root app.py loads via importlib under module name 'app' (Vercel runtime simulation).
+1. app/app.py directly exports the canonical Flask `app` object.
 2. Direct root route '/' returns 200 OK with the LORE homepage.
 3. Static files (CSS, JS, SVG) are properly served by Flask.
 4. Info and Categories endpoints return full dataset metrics (520 stories across 13 genres).
@@ -12,28 +12,20 @@ import os
 import sys
 import json
 import unittest
-import importlib.util
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# Simulate Vercel runtime loading root app.py as module 'app'
-ROOT_APP_FILE = os.path.join(PROJECT_ROOT, "app.py")
-spec = importlib.util.spec_from_file_location("app", ROOT_APP_FILE)
-app_module = importlib.util.module_from_spec(spec)
-sys.modules["app"] = app_module
-spec.loader.exec_module(app_module)
-
-app = app_module.app
+from app.app import app
 
 
-class TestRootFlaskEntryPoint(unittest.TestCase):
+class TestFlaskApplication(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
 
     def test_flask_instance(self):
-        """Verify root app.py exports a valid Flask instance."""
+        """Verify app/app.py exports a valid Flask instance."""
         import flask
         self.assertIsInstance(app, flask.Flask)
 
