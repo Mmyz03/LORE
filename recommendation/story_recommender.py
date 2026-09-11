@@ -63,6 +63,13 @@ SETTING_KEYWORDS = {
 }
 
 
+# Resolve robust absolute default paths relative to this file
+RECOMMENDATION_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(RECOMMENDATION_DIR)
+DEFAULT_VEC_PATH = os.path.join(PROJECT_ROOT, "models", "tfidf_vectorizer.pkl")
+DEFAULT_IDX_PATH = os.path.join(PROJECT_ROOT, "models", "story_index.pkl")
+
+
 class StoryRecommender:
     """
     Intelligent Story Recommendation & Retrieval Engine:
@@ -73,11 +80,11 @@ class StoryRecommender:
 
     def __init__(
         self,
-        vectorizer_path: str = "models/tfidf_vectorizer.pkl",
-        index_path: str = "models/story_index.pkl"
+        vectorizer_path: str = None,
+        index_path: str = None
     ):
-        self.vectorizer_path = vectorizer_path
-        self.index_path = index_path
+        self.vectorizer_path = vectorizer_path or DEFAULT_VEC_PATH
+        self.index_path = index_path or DEFAULT_IDX_PATH
         self.vectorizer = None
         self.tfidf_matrix = None
         self.stories_df = None

@@ -86,13 +86,23 @@ def save_story_index(
     print(f"[+] Serialized story index bundle to: {index_path} ({len(df):,} stories)")
 
 
+# Resolve robust absolute default paths relative to this file
+MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(MODULE_DIR)
+DEFAULT_VEC_PATH = os.path.join(PROJECT_ROOT, "models", "tfidf_vectorizer.pkl")
+DEFAULT_IDX_PATH = os.path.join(PROJECT_ROOT, "models", "story_index.pkl")
+
+
 def load_story_index(
-    vectorizer_path: str = "models/tfidf_vectorizer.pkl",
-    index_path: str = "models/story_index.pkl"
+    vectorizer_path: str = None,
+    index_path: str = None
 ):
     """
     Loads pre-trained vectorizer and story index into memory.
     """
+    vectorizer_path = vectorizer_path or DEFAULT_VEC_PATH
+    index_path = index_path or DEFAULT_IDX_PATH
+
     if not os.path.exists(vectorizer_path):
         raise FileNotFoundError(f"Vectorizer file not found at: {vectorizer_path}")
     if not os.path.exists(index_path):

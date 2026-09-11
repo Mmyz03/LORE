@@ -9,16 +9,25 @@ import json
 import time
 from flask import Flask, render_template, request, jsonify
 
-# Add project root to sys.path
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Resolve robust absolute paths relative to this file
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(APP_DIR)
+TEMPLATE_DIR = os.path.join(APP_DIR, "templates")
+STATIC_DIR = os.path.join(APP_DIR, "static")
+
+# Ensure project root is in sys.path for cross-module imports
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from recommendation.story_recommender import StoryRecommender
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=TEMPLATE_DIR,
+    static_folder=STATIC_DIR
+)
 
-# Model and dataset paths
+# Model and dataset absolute paths
 VEC_PATH = os.path.join(PROJECT_ROOT, "models", "tfidf_vectorizer.pkl")
 IDX_PATH = os.path.join(PROJECT_ROOT, "models", "story_index.pkl")
 EVAL_PATH = os.path.join(PROJECT_ROOT, "evaluation", "evaluation_results.json")
