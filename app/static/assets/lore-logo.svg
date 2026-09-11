@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" width="100%" height="100%">
+  <defs>
+    <!-- Background / Shadow Glows -->
+    <radialGradient id="logoBackdropGlow" cx="50%" cy="40%" r="48%">
+      <stop offset="0%" stop-color="#f5d78e" stop-opacity="0.25" />
+      <stop offset="45%" stop-color="#b88a38" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#070a12" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Warm Golden Gradients -->
+    <linearGradient id="goldPrimaryFull" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff8e7" />
+      <stop offset="25%" stop-color="#f5dc9e" />
+      <stop offset="60%" stop-color="#d8ab4e" />
+      <stop offset="90%" stop-color="#b07f2a" />
+      <stop offset="100%" stop-color="#845a16" />
+    </linearGradient>
+
+    <linearGradient id="goldHighlightFull" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="30%" stop-color="#fef3d6" />
+      <stop offset="70%" stop-color="#e0b258" />
+      <stop offset="100%" stop-color="#9a6c1e" />
+    </linearGradient>
+
+    <linearGradient id="goldShadowFull" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5a3d0f" />
+      <stop offset="50%" stop-color="#8b6222" />
+      <stop offset="100%" stop-color="#d4a74b" />
+    </linearGradient>
+
+    <linearGradient id="wordmarkGold" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="20%" stop-color="#fbecc5" />
+      <stop offset="55%" stop-color="#e2ba62" />
+      <stop offset="85%" stop-color="#b88528" />
+      <stop offset="100%" stop-color="#dfb75e" />
+    </linearGradient>
+
+    <!-- Door Light Stream Gradient -->
+    <linearGradient id="doorwayLightFull" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#080c14" />
+      <stop offset="40%" stop-color="#1b1d22" />
+      <stop offset="70%" stop-color="#7a5518" stop-opacity="0.4" />
+      <stop offset="92%" stop-color="#fcebc2" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.98" />
+    </linearGradient>
+
+    <linearGradient id="door3DBevelFull" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde8b3" />
+      <stop offset="40%" stop-color="#d8a341" />
+      <stop offset="100%" stop-color="#714a13" />
+    </linearGradient>
+
+    <!-- Star Glow Filter -->
+    <filter id="starGlowFull" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="softGlowFull" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Atmospheric ambient aura behind emblem -->
+  <circle cx="300" cy="235" r="230" fill="url(#logoBackdropGlow)" />
+
+  <!-- EMBLEM GRAPHIC -->
+  <g id="lore-emblem-section" transform="translate(50, 10)">
+    <!-- Dark portal opening behind door -->
+    <path d="M 226 142 L 274 158 L 274 340 L 226 370 Z" fill="#0b0e18" />
+    
+    <!-- Light beaming from doorway edge -->
+    <path d="M 226 142 L 274 158 L 274 340 L 226 370 Z" fill="url(#doorwayLightFull)" opacity="0.95" />
+
+    <!-- 4-POINT STAR & SPARKLE INSIDE DOORWAY -->
+    <circle cx="242" cy="240" r="9" fill="#ffecb6" opacity="0.3" filter="url(#softGlowFull)" />
+    <!-- 4-point Diamond Star -->
+    <path d="M 242 216 Q 242 240 230 240 Q 242 240 242 264 Q 242 240 254 240 Q 242 240 242 216 Z" 
+          fill="#ffffff" 
+          filter="url(#starGlowFull)" />
+    <!-- Secondary Tiny Sparkle Dot -->
+    <circle cx="228" cy="254" r="2.2" fill="#fff5d6" opacity="0.9" />
+
+    <!-- OPEN DOOR (Ajar in perspective) -->
+    <path d="M 228 142 L 268 155 L 268 340 L 228 368 Z" fill="#0d111c" stroke="#9a7126" stroke-width="1.2" opacity="0.7" />
+    <path d="M 268 155 L 276 160 L 276 335 L 268 340 Z" fill="url(#door3DBevelFull)" />
+    <path d="M 275 160 L 277 160 L 277 335 L 275 335 Z" fill="#ffffff" opacity="0.85" />
+
+    <!-- LEFT 'L' SERIF COLUMN & ARCH -->
+    <path d="M 140 124 
+             C 165 124, 180 135, 180 160 
+             L 180 340 
+             C 180 365, 165 374, 140 376 
+             L 140 378 
+             C 165 378, 190 380, 226 388 
+             L 226 144 
+             C 226 130, 240 122, 262 120 
+             L 262 118 
+             C 220 118, 180 118, 140 124 Z" 
+          fill="url(#goldPrimaryFull)" />
+
+    <!-- Top Serif Flair of 'L' -->
+    <path d="M 174 118 
+             C 174 118, 192 118, 258 118 
+             C 230 126, 226 140, 226 150 
+             L 174 150 
+             C 174 140, 160 130, 140 124 
+             C 160 120, 170 118, 174 118 Z" 
+          fill="url(#goldHighlightFull)" />
+
+    <!-- Crisp Highlight Edge on L column -->
+    <path d="M 178 140 L 180 140 L 180 350 L 178 352 Z" fill="#ffffff" opacity="0.4" />
+
+    <!-- BASE OF 'L' & SWEEPING BOOK PAGES -->
+    <!-- Page 1: Main Top sweeping book arc fanning outward right -->
+    <path d="M 188 368 
+             C 200 372, 230 388, 260 382 
+             C 285 376, 320 338, 368 338 
+             C 345 348, 305 358, 270 395 
+             C 245 408, 205 388, 188 368 Z" 
+          fill="url(#goldHighlightFull)" />
+
+    <!-- Page 2: Middle sweeping page leaf -->
+    <path d="M 198 376 
+             C 215 386, 248 402, 275 398 
+             C 305 392, 335 365, 376 360 
+             C 350 372, 315 382, 280 412 
+             C 255 422, 215 400, 198 376 Z" 
+          fill="url(#goldPrimaryFull)" />
+
+    <!-- Page 3: Bottom sweeping page foundation -->
+    <path d="M 210 386 
+             C 230 400, 260 414, 288 412 
+             C 320 408, 350 388, 386 382 
+             C 360 394, 325 406, 290 426 
+             C 265 434, 230 412, 210 386 Z" 
+          fill="url(#goldShadowFull)" />
+
+    <!-- Page Highlights -->
+    <path d="M 260 382 C 285 376, 320 338, 368 338" 
+          fill="none" stroke="#fff9e6" stroke-width="2" stroke-linecap="round" />
+    <path d="M 275 398 C 305 392, 335 365, 376 360" 
+          fill="none" stroke="#ffe7a3" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M 288 412 C 320 408, 350 388, 386 382" 
+          fill="none" stroke="#e0b258" stroke-width="1.6" stroke-linecap="round" />
+  </g>
+
+  <!-- LORE WORDMARK (Serif Letterforms matching the brand visual reference) -->
+  <g id="lore-wordmark" fill="url(#wordmarkGold)">
+    <!-- 'L' -->
+    <path d="M 142 550 L 142 554 C 154 554, 162 557, 162 568 L 162 626 C 162 637, 154 640, 142 640 L 142 644 L 196 644 C 218 644, 226 630, 228 616 L 223 616 C 220 626, 214 636, 196 636 L 176 636 L 176 568 C 176 557, 184 554, 196 554 L 196 550 Z" />
+
+    <!-- 'O' -->
+    <path d="M 266 548 C 238 548, 220 570, 220 598 C 220 626, 238 646, 266 646 C 294 646, 312 626, 312 598 C 312 570, 294 548, 266 548 Z M 266 553 C 283 553, 295 572, 295 598 C 295 624, 283 641, 266 641 C 249 641, 237 624, 237 598 C 237 572, 249 553, 266 553 Z" />
+
+    <!-- 'R' -->
+    <path d="M 334 550 L 334 554 C 346 554, 354 557, 354 568 L 354 626 C 354 637, 346 640, 334 640 L 334 644 L 372 644 C 382 644, 388 637, 388 626 L 388 596 C 388 584, 380 578, 368 578 C 382 578, 396 572, 396 560 C 396 552, 388 548, 372 548 L 334 548 Z M 368 554 C 378 554, 382 558, 382 564 C 382 572, 376 576, 366 576 L 366 554 Z M 368 582 C 378 582, 384 586, 387 594 L 406 638 C 411 642, 417 644, 424 644 L 424 640 C 418 640, 413 637, 410 630 L 391 590 C 387 584, 380 582, 368 582 Z" />
+
+    <!-- 'E' -->
+    <path d="M 436 550 L 436 554 C 448 554, 456 557, 456 568 L 456 626 C 456 637, 448 640, 436 640 L 436 644 L 492 644 C 512 644, 520 632, 522 618 L 517 618 C 514 628, 508 636, 492 636 L 470 636 L 470 600 L 488 600 C 496 600, 500 604, 501 612 L 505 612 L 505 582 L 501 582 C 500 590, 496 594, 488 594 L 470 594 L 470 568 C 470 557, 478 554, 490 554 L 506 554 C 516 554, 520 560, 522 568 L 526 568 L 524 550 Z" />
+  </g>
+</svg>

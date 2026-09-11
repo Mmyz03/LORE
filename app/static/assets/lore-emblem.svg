@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Background / Shadow Glows -->
+    <radialGradient id="emblemBackdropGlow" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#f5d78e" stop-opacity="0.22" />
+      <stop offset="45%" stop-color="#b88a38" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#070a12" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Warm Golden Gradients -->
+    <linearGradient id="goldPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff8e7" />
+      <stop offset="25%" stop-color="#f5dc9e" />
+      <stop offset="60%" stop-color="#d8ab4e" />
+      <stop offset="90%" stop-color="#b07f2a" />
+      <stop offset="100%" stop-color="#845a16" />
+    </linearGradient>
+
+    <linearGradient id="goldHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="30%" stop-color="#fef3d6" />
+      <stop offset="70%" stop-color="#e0b258" />
+      <stop offset="100%" stop-color="#9a6c1e" />
+    </linearGradient>
+
+    <linearGradient id="goldShadow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5a3d0f" />
+      <stop offset="50%" stop-color="#8b6222" />
+      <stop offset="100%" stop-color="#d4a74b" />
+    </linearGradient>
+
+    <!-- Door Light Stream Gradient -->
+    <linearGradient id="doorwayLight" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#080c14" />
+      <stop offset="40%" stop-color="#1b1d22" />
+      <stop offset="70%" stop-color="#7a5518" stop-opacity="0.4" />
+      <stop offset="92%" stop-color="#fcebc2" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.98" />
+    </linearGradient>
+
+    <linearGradient id="door3DBevel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde8b3" />
+      <stop offset="40%" stop-color="#d8a341" />
+      <stop offset="100%" stop-color="#714a13" />
+    </linearGradient>
+
+    <!-- Star Glow Filter -->
+    <filter id="starGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Atmospheric subtle ambient aura -->
+  <circle cx="250" cy="240" r="220" fill="url(#emblemBackdropGlow)" />
+
+  <!-- MAIN EMBLEM GROUP -->
+  <g id="lore-emblem-graphic" transform="translate(0, 0)">
+    <!-- DOORWAY INTERIOR / LIGHT VOID -->
+    <!-- Dark portal opening behind door -->
+    <path d="M 226 142 L 274 158 L 274 340 L 226 370 Z" fill="#0b0e18" />
+    
+    <!-- Light beaming from doorway edge -->
+    <path d="M 226 142 L 274 158 L 274 340 L 226 370 Z" fill="url(#doorwayLight)" opacity="0.95" />
+
+    <!-- 4-POINT STAR & SPARKLE INSIDE DOORWAY -->
+    <!-- Ambient star glow -->
+    <circle cx="242" cy="240" r="9" fill="#ffecb6" opacity="0.3" filter="url(#softGlow)" />
+    <!-- 4-point Diamond Star -->
+    <path d="M 242 216 Q 242 240 230 240 Q 242 240 242 264 Q 242 240 254 240 Q 242 240 242 216 Z" 
+          fill="#ffffff" 
+          filter="url(#starGlow)" />
+    <!-- Secondary Tiny Sparkle Dot -->
+    <circle cx="228" cy="254" r="2.2" fill="#fff5d6" opacity="0.9" />
+
+    <!-- OPEN DOOR (Ajar in perspective) -->
+    <!-- Door Panel Surface -->
+    <path d="M 228 142 L 268 155 L 268 340 L 228 368 Z" fill="#0d111c" stroke="#9a7126" stroke-width="1.2" opacity="0.7" />
+    <!-- Door 3D Beveled Edge / Jamb with radiant light highlight -->
+    <path d="M 268 155 L 276 160 L 276 335 L 268 340 Z" fill="url(#door3DBevel)" />
+    <path d="M 275 160 L 277 160 L 277 335 L 275 335 Z" fill="#ffffff" opacity="0.85" />
+
+    <!-- LEFT 'L' SERIF COLUMN & ARCH -->
+    <!-- Main Vertical Spine of 'L' -->
+    <path d="M 174 118 
+             C 174 118, 205 118, 226 118 
+             C 246 118, 260 126, 260 144 
+             L 226 144 
+             L 226 370 
+             C 210 376, 185 376, 174 374 
+             L 174 118 Z" 
+          fill="url(#goldPrimary)" />
+
+    <!-- Top Serif Flair of 'L' (Curving inward & left) -->
+    <path d="M 174 118 
+             C 174 118, 192 118, 258 118 
+             C 230 126, 226 140, 226 150 
+             L 174 150 
+             C 174 140, 160 130, 140 124 
+             C 160 120, 170 118, 174 118 Z" 
+          fill="url(#goldHighlight)" />
+          
+    <path d="M 140 124 
+             C 165 124, 180 135, 180 160 
+             L 180 340 
+             C 180 365, 165 374, 140 376 
+             L 140 378 
+             C 165 378, 190 380, 226 388 
+             L 226 144 
+             C 226 130, 240 122, 262 120 
+             L 262 118 
+             C 220 118, 180 118, 140 124 Z" 
+          fill="url(#goldPrimary)" />
+
+    <!-- Crisp Highlight Edge on L column -->
+    <path d="M 178 140 L 180 140 L 180 350 L 178 352 Z" fill="#ffffff" opacity="0.4" />
+
+    <!-- BASE OF 'L' & SWEEPING BOOK PAGES -->
+    <!-- Page 1: Main Top sweeping book arc fanning outward right -->
+    <path d="M 188 368 
+             C 200 372, 230 388, 260 382 
+             C 285 376, 320 338, 368 338 
+             C 345 348, 305 358, 270 395 
+             C 245 408, 205 388, 188 368 Z" 
+          fill="url(#goldHighlight)" />
+
+    <!-- Page 2: Middle sweeping page leaf -->
+    <path d="M 198 376 
+             C 215 386, 248 402, 275 398 
+             C 305 392, 335 365, 376 360 
+             C 350 372, 315 382, 280 412 
+             C 255 422, 215 400, 198 376 Z" 
+          fill="url(#goldPrimary)" />
+
+    <!-- Page 3: Bottom sweeping page foundation -->
+    <path d="M 210 386 
+             C 230 400, 260 414, 288 412 
+             C 320 408, 350 388, 386 382 
+             C 360 394, 325 406, 290 426 
+             C 265 434, 230 412, 210 386 Z" 
+          fill="url(#goldShadow)" />
+
+    <!-- Page Highlights and Linework for crisp definition -->
+    <path d="M 260 382 C 285 376, 320 338, 368 338" 
+          fill="none" stroke="#fff9e6" stroke-width="2" stroke-linecap="round" />
+    <path d="M 275 398 C 305 392, 335 365, 376 360" 
+          fill="none" stroke="#ffe7a3" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M 288 412 C 320 408, 350 388, 386 382" 
+          fill="none" stroke="#e0b258" stroke-width="1.6" stroke-linecap="round" />
+  </g>
+</svg>

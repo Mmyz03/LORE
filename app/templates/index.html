@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LORE — Stories worth getting lost in.</title>
+    <meta name="description" content="LORE — Discover captivating stories worth getting lost in. Tell us what you'd like to read and explore timeless tales matched to your mood.">
+    
+    <!-- Favicon using official standalone LORE emblem -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='assets/lore-emblem.svg') }}">
+    <link rel="alternate icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='assets/lore-emblem.png') }}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Subtle Background Lighting Elements -->
+    <div class="bg-glow glow-gold" aria-hidden="true"></div>
+    <div class="bg-glow glow-navy" aria-hidden="true"></div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="nav-brand" id="nav-brand-link" aria-label="LORE Home">
+                <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="nav-brand-emblem">
+                <span class="nav-brand-wordmark">LORE</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#search-section" class="nav-link active" id="nav-home">Home</a>
+                <a href="#mood-section" class="nav-link" id="nav-explore">Explore</a>
+                <button type="button" class="nav-link nav-btn" id="btn-about">About</button>
+                <div class="nav-status">
+                    <span class="status-indicator"></span>
+                    <span class="status-text" id="db-status-pill">Ready to Explore</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-wrapper">
+        <!-- Hero Section -->
+        <section class="hero-section" id="search-section">
+            <div class="container hero-container">
+                
+                <!-- Hero Centerpiece Brand Presentation -->
+                <div class="hero-brand-block">
+                    <div class="hero-emblem-frame">
+                        <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="hero-emblem-img">
+                    </div>
+                    <h1 class="hero-brand-title">LORE</h1>
+                    <p class="hero-brand-tagline">Stories worth getting lost in.</p>
+                </div>
+
+                <div class="hero-prompt-lead">
+                    <h2 class="hero-mood-question">What are you in the mood for?</h2>
+                </div>
+
+                <!-- Story Request Input (Centerpiece) -->
+                <div class="search-card-wrapper">
+                    <div class="search-card" id="search-card">
+                        <div class="search-card-header">
+                            <span class="search-card-label">&#10022; Tell us what you'd like to read...</span>
+                            <span class="selected-cat-badge" id="active-category-indicator" style="display: none;">
+                                <span id="active-cat-name">Category</span>
+                                <button type="button" class="btn-remove-cat" id="btn-remove-cat" title="Remove category filter">&times;</button>
+                            </span>
+                        </div>
+
+                        <div class="search-input-area">
+                            <textarea 
+                                id="story-query-input" 
+                                class="search-input" 
+                                placeholder="A scary story about a haunted forest at night..." 
+                                rows="3"
+                                spellcheck="false"
+                            ></textarea>
+                            <button type="button" class="clear-input-btn" id="btn-clear-query" title="Clear request" style="display: none;">
+                                &times;
+                            </button>
+                        </div>
+
+                        <div class="search-card-footer">
+                            <div class="search-helper-text">
+                                <span>Press <strong>Enter</strong> to find</span>
+                            </div>
+                            <button type="button" id="btn-submit-search" class="btn-find-story">
+                                <span class="btn-text">Generate Story</span>
+                                <svg class="btn-arrow-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                                <div class="btn-spinner" id="btn-spinner"></div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Example Prompt Chips -->
+                    <div class="example-prompts-container">
+                        <span class="examples-heading">Try:</span>
+                        <div class="example-chips">
+                            <button type="button" class="example-chip" data-prompt="Horror story at midnight">
+                                “Horror story at midnight”
+                            </button>
+                            <button type="button" class="example-chip" data-prompt="Funny story about friendship">
+                                “Funny story about friendship”
+                            </button>
+                            <button type="button" class="example-chip" data-prompt="Mysterious detective story">
+                                “Mysterious detective story”
+                            </button>
+                            <button type="button" class="example-chip" data-prompt="Short bedtime story">
+                                “Short bedtime story”
+                            </button>
+                            <button type="button" class="example-chip" data-prompt="Sci-Fi space exploration mission">
+                                “Sci-Fi space mission”
+                            </button>
+                            <button type="button" class="example-chip" data-prompt="An emotional family memory">
+                                “Emotional family memory”
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Exploration Section ("Explore by mood") -->
+        <section class="mood-section" id="mood-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Explore by mood</h2>
+                    <p class="section-subtitle">Select a genre to browse stories matched to that specific atmosphere</p>
+                </div>
+
+                <div class="mood-grid" id="mood-grid">
+                    <button type="button" class="mood-card" data-category="Horror">
+                        <span class="mood-icon">👻</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Horror</span>
+                            <span class="mood-desc">Chilling &amp; eerie tales</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Mystery">
+                        <span class="mood-icon">🔍</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Mystery</span>
+                            <span class="mood-desc">Enigmas &amp; investigations</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Adventure">
+                        <span class="mood-icon">🧭</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Adventure</span>
+                            <span class="mood-desc">Quests &amp; expeditions</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Romance">
+                        <span class="mood-icon">💖</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Romance</span>
+                            <span class="mood-desc">Serendipity &amp; deep love</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Comedy">
+                        <span class="mood-icon">🎭</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Comedy</span>
+                            <span class="mood-desc">Lighthearted &amp; hilarious</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Fantasy">
+                        <span class="mood-icon">🔮</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Fantasy</span>
+                            <span class="mood-desc">Magic &amp; mythical realms</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Sci-Fi">
+                        <span class="mood-icon">🚀</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Sci-Fi</span>
+                            <span class="mood-desc">Space &amp; future worlds</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Thriller">
+                        <span class="mood-icon">⚡</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Thriller</span>
+                            <span class="mood-desc">Suspense &amp; high stakes</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Friendship">
+                        <span class="mood-icon">🤝</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Friendship</span>
+                            <span class="mood-desc">Loyalty &amp; mutual bonds</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Emotional">
+                        <span class="mood-icon">🍃</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Emotional</span>
+                            <span class="mood-desc">Bittersweet &amp; heartfelt</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Moral">
+                        <span class="mood-icon">⚖️</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Moral</span>
+                            <span class="mood-desc">Wisdom &amp; timeless lessons</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="mood-card" data-category="Bedtime Stories">
+                        <span class="mood-icon">🌙</span>
+                        <div class="mood-info">
+                            <span class="mood-name">Bedtime</span>
+                            <span class="mood-desc">Calm &amp; peaceful slumber</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading / Shimmer State with Standalone Emblem -->
+        <section id="loading-state-section" class="loading-state-section" style="display: none;">
+            <div class="container reader-container">
+                <div class="skeleton-reader-card">
+                    <div class="loading-emblem-centerpiece">
+                        <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Loading Mark" class="loading-emblem-pulse">
+                    </div>
+                    <div class="skeleton-pill"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-subtitle"></div>
+                    <div class="skeleton-divider"></div>
+                    <div class="skeleton-line" style="width: 100%;"></div>
+                    <div class="skeleton-line" style="width: 95%;"></div>
+                    <div class="skeleton-line" style="width: 88%;"></div>
+                    <div class="skeleton-line" style="width: 92%;"></div>
+                    <div class="skeleton-line" style="width: 70%;"></div>
+                    <div class="loading-message">
+                        <div class="pulse-ring"></div>
+                        <span>Finding a story for you...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Story Result Reader Section (LORE Subtle Branding) -->
+        <section id="story-section" class="story-result-section" style="display: none;">
+            <div class="container reader-container">
+                <article class="story-reader-card">
+                    <!-- Brand Attribution Header -->
+                    <div class="story-brand-header">
+                        <div class="story-brand-label">
+                            <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="story-brand-mini-emblem">
+                            <span class="story-brand-name">LORE</span>
+                        </div>
+                        <span class="story-brand-tag">A story picked for you</span>
+                    </div>
+
+                    <div class="reader-header-divider"></div>
+
+                    <!-- Reader Top Header -->
+                    <div class="reader-top-bar">
+                        <div class="genre-pill-wrapper">
+                            <span class="genre-badge" id="story-genre-tag">HORROR</span>
+                        </div>
+                        <div class="reader-controls">
+                            <span class="reading-estimate" id="story-reading-time">2 min read</span>
+                            <div class="font-size-toggles">
+                                <button type="button" class="btn-text-size" id="btn-decrease-font" title="Smaller font">A-</button>
+                                <button type="button" class="btn-text-size" id="btn-increase-font" title="Larger font">A+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Story Main Title -->
+                    <h2 class="reader-title" id="story-title-display">The Whispering Forest</h2>
+
+                    <!-- Story Metadata Tags -->
+                    <div class="story-tags-row">
+                        <span class="story-chip tag-theme" id="story-theme-tag">Ghost</span>
+                        <span class="story-chip tag-setting" id="story-setting-tag">Forest at Night</span>
+                        <span class="story-chip tag-mood" id="story-mood-tag">Scary</span>
+                    </div>
+
+                    <!-- Voice Narration Toolbar -->
+                    <div class="narration-toolbar" id="narration-toolbar">
+                        <div class="narration-main-controls">
+                            <!-- Back 10s Button -->
+                            <button type="button" class="btn-skip-audio btn-skip-back" id="btn-audio-back" aria-label="Back 10 seconds" title="Back 10 seconds (←)">
+                                <span class="skip-icon">↶</span>
+                                <span class="skip-label">10s</span>
+                            </button>
+
+                            <!-- Play / Pause / Resume Button -->
+                            <button type="button" class="btn-listen-story" id="btn-listen-story" aria-label="Listen to story (Space)">
+                                <span class="btn-listen-icon" id="btn-listen-icon">▶</span>
+                                <span class="btn-listen-text" id="btn-listen-text">Listen to Story</span>
+                                <div class="audio-wave-anim" id="audio-wave-anim" style="display: none;" aria-hidden="true">
+                                    <span></span><span></span><span></span><span></span>
+                                </div>
+                            </button>
+
+                            <!-- Forward 10s Button -->
+                            <button type="button" class="btn-skip-audio btn-skip-forward" id="btn-audio-forward" aria-label="Forward 10 seconds" title="Forward 10 seconds (→)">
+                                <span class="skip-label">10s</span>
+                                <span class="skip-icon">↷</span>
+                            </button>
+
+                            <!-- Stop Button -->
+                            <button type="button" class="btn-audio-action" id="btn-audio-stop" aria-label="Stop narration" style="display: none;" title="Stop narration">
+                                <span>⏹ Stop</span>
+                            </button>
+                        </div>
+
+                        <!-- Story Audio Progress Track -->
+                        <div class="narration-progress-wrapper" id="narration-progress-wrapper" style="display: none;">
+                            <div class="narration-progress-bar" id="narration-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Story Narration Progress">
+                                <div class="narration-progress-fill" id="narration-progress-fill" style="width: 0%;"></div>
+                                <div class="narration-progress-dot" id="narration-progress-dot" style="left: 0%;"></div>
+                            </div>
+                            <div class="narration-progress-meta">
+                                <span class="progress-time" id="progress-current-pos">Part 1</span>
+                                <span class="progress-total" id="progress-total-parts">of 1</span>
+                            </div>
+                        </div>
+
+                        <div class="narration-settings">
+                            <!-- Voice Selector -->
+                            <div class="audio-setting-group voice-group" id="voice-select-group">
+                                <label for="voice-select" class="audio-setting-label">Voice</label>
+                                <select id="voice-select" class="audio-select voice-select" aria-label="Select narration voice">
+                                    <option value="">Default Voice</option>
+                                </select>
+                            </div>
+
+                            <!-- Reading Speed Selector -->
+                            <div class="audio-setting-group speed-group">
+                                <label class="audio-setting-label">Speed</label>
+                                <div class="speed-toggle-group" role="group" aria-label="Playback speed">
+                                    <button type="button" class="btn-speed-opt" data-speed="0.25" aria-label="0.25 speed">0.25×</button>
+                                    <button type="button" class="btn-speed-opt" data-speed="0.5" aria-label="0.5 speed">0.5×</button>
+                                    <button type="button" class="btn-speed-opt" data-speed="0.75" aria-label="0.75 speed">0.75×</button>
+                                    <button type="button" class="btn-speed-opt active" data-speed="1.0" aria-label="Normal 1 speed">1×</button>
+                                    <button type="button" class="btn-speed-opt" data-speed="1.25" aria-label="1.25 speed">1.25×</button>
+                                    <button type="button" class="btn-speed-opt" data-speed="1.5" aria-label="1.5 speed">1.5×</button>
+                                    <button type="button" class="btn-speed-opt" data-speed="1.75" aria-label="1.75 speed">1.75×</button>
+                                    <button type="button" class="btn-speed-opt" data-speed="2.0" aria-label="2 speed">2×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reader-divider"></div>
+
+                    <!-- Story Narrative Text -->
+                    <div class="reader-body" id="story-text-display">
+                        <!-- Narrative content inserted here -->
+                    </div>
+
+                    <div class="reader-divider"></div>
+
+                    <!-- "Why this story?" Explainability Section -->
+                    <div class="explainability-box">
+                        <div class="explain-box-header">
+                            <div class="explain-heading">
+                                <span class="check-badge">&#10003;</span>
+                                <h3>Why this story?</h3>
+                            </div>
+                            <span class="relevance-score" id="story-relevance-score">94% Match</span>
+                        </div>
+                        <p class="explain-subtext">Matched your request using semantic NLP intent analysis:</p>
+
+                        <div class="reasons-grid" id="story-reasons-container">
+                            <!-- Dynamic reason tags -->
+                        </div>
+                    </div>
+
+                    <!-- Story Action Buttons -->
+                    <div class="reader-actions-footer">
+                        <button type="button" id="btn-find-another" class="btn-find-another">
+                            <svg class="refresh-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                            <span>Find Another Story</span>
+                        </button>
+
+                        <button type="button" id="btn-copy-story" class="btn-secondary-action">
+                            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>Copy Story</span>
+                        </button>
+
+                        <button type="button" id="btn-new-search" class="btn-secondary-action">
+                            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <span>New Search</span>
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Empty State (Before search) -->
+        <section id="empty-state-section" class="empty-state-section">
+            <div class="container reader-container">
+                <div class="empty-state-box">
+                    <div class="empty-brand-emblem-frame">
+                        <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="empty-brand-emblem">
+                    </div>
+                    <h3>Your next story is waiting.</h3>
+                    <p>Describe the kind of story you're in the mood for above, or select one of the genres to get lost in a tale.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- No Results / Error State -->
+        <section id="error-state-section" class="error-state-section" style="display: none;">
+            <div class="container reader-container">
+                <div class="error-state-box">
+                    <div class="error-icon">&#9888;</div>
+                    <h3 id="error-title">We couldn't find a close match.</h3>
+                    <p id="error-message">Try describing your story in a different way or explore one of the mood categories.</p>
+                    <div class="error-actions">
+                        <button type="button" class="btn-retry" id="btn-error-retry">Try Again</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- About Modal Window -->
+    <div id="about-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div class="modal-brand">
+                    <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="modal-brand-emblem">
+                    <span class="modal-brand-name">LORE</span>
+                </div>
+                <button type="button" class="modal-close" id="btn-close-about">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-tagline">Stories worth getting lost in.</p>
+                <p class="modal-intro">
+                    <strong>LORE</strong> is an intelligent, atmospheric story recommendation and retrieval system designed to connect readers with captivating public-domain literature tailored to their exact mood, setting, and theme.
+                </p>
+
+                <div class="architecture-flow">
+                    <h4>How Recommendation Works</h4>
+                    <div class="flow-step">
+                        <span class="step-badge">1</span>
+                        <div>
+                            <strong>Natural Language Intent Parsing</strong>
+                            <p>Extracts explicit and implicit categories, themes, moods, and setting keywords from your prompt.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <span class="step-badge">2</span>
+                        <div>
+                            <strong>TF-IDF &amp; Cosine Similarity</strong>
+                            <p>Converts your query into a high-dimensional vector and measures geometric closeness against all corpus documents.</p>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <span class="step-badge">3</span>
+                        <div>
+                            <strong>Feature Ranking &amp; Explainability</strong>
+                            <p>Combines text similarity with metadata bonuses to rank candidates and display clear match reasons.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-callout">
+                    <span>⚡ 100% Curated Retrieval &bull; Zero External Generative AI APIs</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Minimal Modern Footer -->
+    <footer class="app-footer">
+        <div class="container footer-container">
+            <div class="footer-left">
+                <div class="footer-brand-lockup">
+                    <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="footer-logo-img">
+                    <span class="footer-brand">LORE</span>
+                </div>
+                <span class="footer-tagline">Stories worth getting lost in.</span>
+            </div>
+            <div class="footer-right">
+                <span>&copy; 2026 LORE. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mini Sticky Audiobook Player (Bottom Viewport) -->
+    <div id="mini-audio-player" class="mini-audio-player" style="display: none;" role="region" aria-label="Floating Audiobook Player">
+        <div class="mini-audio-card">
+            <!-- Top Controls: Back 10s, Play/Pause, Forward 10s, Stop -->
+            <div class="mini-audio-top-row">
+                <div class="mini-transport-controls">
+                    <button type="button" id="btn-mini-back" class="btn-mini-skip" aria-label="Back 10 seconds" title="Back 10s (←)">
+                        <span class="skip-icon">↶</span>
+                        <span class="skip-label">10s</span>
+                    </button>
+
+                    <button type="button" id="btn-mini-play-pause" class="btn-mini-primary" aria-label="Play or pause narration (Space)">
+                        <span id="mini-play-icon">⏸</span>
+                    </button>
+
+                    <button type="button" id="btn-mini-forward" class="btn-mini-skip" aria-label="Forward 10 seconds" title="Forward 10s (→)">
+                        <span class="skip-label">10s</span>
+                        <span class="skip-icon">↷</span>
+                    </button>
+                </div>
+
+                <div class="mini-actions-group">
+                    <button type="button" id="btn-mini-stop" class="btn-mini-action" aria-label="Stop narration" title="Stop narration">
+                        <span>⏹</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Middle Progress Scrub Line -->
+            <div class="mini-progress-track" id="mini-progress-track" title="Click to jump in story">
+                <div class="mini-progress-fill" id="mini-progress-fill" style="width: 0%;"></div>
+                <div class="mini-progress-thumb" id="mini-progress-thumb" style="left: 0%;"></div>
+            </div>
+
+            <!-- Bottom Row: Title, Speed badge, Speaker indicator -->
+            <div class="mini-audio-bottom-row">
+                <div class="mini-title-group">
+                    <span class="mini-speaker-icon">🔊</span>
+                    <span class="mini-audio-title" id="mini-audio-title">The Whispering Forest</span>
+                </div>
+                <div class="mini-meta-group">
+                    <span class="mini-audio-speed" id="mini-audio-speed">1×</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- JavaScript Application Logic -->
+    <script src="{{ url_for('static', filename='speech.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
