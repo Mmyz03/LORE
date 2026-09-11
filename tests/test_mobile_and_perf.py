@@ -77,13 +77,13 @@ def test_css_rules():
     with open(css_path, "r", encoding="utf-8") as f:
         css = f.read()
 
-    # Verify Restored Original Background Palette Tokens & Atmospheric Glows
-    assert "#06080e" in css, "Missing background #06080e in style.css"
+    # Verify Premium Black Background Palette Tokens & Atmospheric Depth
+    assert "#050507" in css, "Missing background #050507 in style.css"
     assert "#e6ca85" in css, "Missing gold-primary #e6ca85 in style.css"
     assert "bg-glow" in css, "Missing .bg-glow in style.css"
     assert "glow-gold" in css, "Missing .glow-gold in style.css"
     assert "glow-navy" in css, "Missing .glow-navy in style.css"
-    print("  [PASS] Restored original background palette tokens (#06080e) and atmospheric glow elements verified")
+    print("  [PASS] Premium black background palette tokens (#050507) and subtle atmospheric depth verified")
 
     # Verify Breakpoints
     breakpoints = ["1024px", "768px", "640px", "430px", "360px"]
