@@ -94,6 +94,44 @@ class TestFlaskApplication(unittest.TestCase):
         js = response.get_data(as_text=True)
         self.assertIn("LoreSpeech", js)
 
+    def test_vercel_rewritten_root(self):
+        """When Vercel rewrites '/' to '/api/index', it returns 200 OK with the LORE homepage."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/"}
+        )
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("LORE", html)
+        self.assertIn("Stories worth getting lost in", html)
+
+    def test_vercel_rewritten_info(self):
+        """When Vercel rewrites '/api/info' to '/api/index', it returns 200 OK."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/api/info"}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["status"], "success")
+
+    def test_vercel_rewritten_categories(self):
+        """When Vercel rewrites '/api/categories' to '/api/index', it returns all 12 presets."""
+        response = self.client.get(
+            "/api/index",
+            headers={"X-Forwarded-Uri": "/api/categories"}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["total"], 12)
+
+    def test_vercel_raw_index_path_stripped(self):
+        """When Vercel invokes '/api/index' directly without headers, it defaults to the root homepage."""
+        response = self.client.get("/api/index")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("LORE", html)
+
 
 if __name__ == "__main__":
     unittest.main()
