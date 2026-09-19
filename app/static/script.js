@@ -343,7 +343,19 @@ document.addEventListener("DOMContentLoaded", () => {
             errorMessage.textContent = "Story generation requires an active AI provider key. Please configure OPENAI_API_KEY (or STORY_AI_API_KEY) in your environment or .env file.";
         } else if (code === "INVALID_API_KEY") {
             errorTitle.textContent = "Invalid AI API Key";
-            errorMessage.textContent = "The configured OPENAI_API_KEY was rejected by OpenAI. Please check your key in your .env file or environment.";
+            errorMessage.textContent = msg || "The configured OPENAI_API_KEY was rejected by OpenAI. Please check your key in your .env file or environment.";
+        } else if (code === "QUOTA_EXCEEDED") {
+            errorTitle.textContent = "OpenAI Quota Exceeded";
+            errorMessage.textContent = msg || "You exceeded your current OpenAI quota. Please check your billing plan and credits at platform.openai.com.";
+        } else if (code === "RATE_LIMIT") {
+            errorTitle.textContent = "Rate Limit Reached";
+            errorMessage.textContent = msg || "OpenAI request limit reached. Please wait a moment and try again.";
+        } else if (code === "MODEL_NOT_FOUND") {
+            errorTitle.textContent = "AI Model Unavailable";
+            errorMessage.textContent = msg || "The requested AI model was not found or your key does not have access to it.";
+        } else if (code === "PERMISSION_DENIED") {
+            errorTitle.textContent = "Permission Denied";
+            errorMessage.textContent = msg || "Your OpenAI API key does not have permission for the requested model.";
         } else {
             errorTitle.textContent = "Story generation is temporarily unavailable.";
             errorMessage.textContent = msg || "Please verify your AI credentials or try another request.";

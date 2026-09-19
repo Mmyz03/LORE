@@ -276,5 +276,57 @@ class TestStoryGeneration(unittest.TestCase):
                 del os.environ[k]
 
 
+    def test_placeholder_api_key_not_available(self):
+        """Verify placeholder keys are treated as unconfigured rather than valid."""
+        for placeholder in ["your_openai_api_key_here", "your_new_openai_api_key_here", "sk-your-openai-api-key", "placeholder_key"]:
+            prov = OpenAIStoryProvider(api_key=placeholder)
+            self.assertFalse(prov.is_available())
+
+    def test_openai_provider_error_mappings(self):
+        """Verify OpenAI error codes are classified accurately."""
+        from unittest.mock import patch, MagicMock
+        prov = OpenAIStoryProvider(api_key="sk-realValidLookingKeyForTesting12345")
+
+        # 1. Test 401 Invalid Key
+        with patch("requests.post") as mock_post:
+            mock_resp = MagicMock()
+            mock_resp.status_code = 401
+            mock_resp.json.return_value = {"error": {"message": "Incorrect API key", "code": "invalid_api_key"}}
+            mock_post.return_value = mock_resp
+            with self.assertRaises(StoryGenerationError) as ctx:
+                prov.generate_story(prompt="A test prompt")
+            self.assertEqual(ctx.exception.code, "INVALID_API_KEY")
+
+        # 2. Test 429 Quota Exceeded
+        with patch("requests.post") as mock_post:
+            mock_resp = MagicMock()
+            mock_resp.status_code = 429
+            mock_resp.json.return_value = {"error": {"message": "You exceeded your current quota", "code": "insufficient_quota"}}
+            mock_post.return_value = mock_resp
+            with self.assertRaises(StoryGenerationError) as ctx:
+                prov.generate_story(prompt="A test prompt")
+            self.assertEqual(ctx.exception.code, "QUOTA_EXCEEDED")
+
+        # 3. Test 404 Model Not Found
+        with patch("requests.post") as mock_post:
+            mock_resp = MagicMock()
+            mock_resp.status_code = 404
+            mock_resp.json.return_value = {"error": {"message": "Model not found", "code": "model_not_found"}}
+            mock_post.return_value = mock_resp
+            with self.assertRaises(StoryGenerationError) as ctx:
+                prov.generate_story(prompt="A test prompt")
+            self.assertEqual(ctx.exception.code, "MODEL_NOT_FOUND")
+
+        # 4. Test 403 Permission Denied
+        with patch("requests.post") as mock_post:
+            mock_resp = MagicMock()
+            mock_resp.status_code = 403
+            mock_resp.json.return_value = {"error": {"message": "Project permission denied", "code": "permission_denied"}}
+            mock_post.return_value = mock_resp
+            with self.assertRaises(StoryGenerationError) as ctx:
+                prov.generate_story(prompt="A test prompt")
+            self.assertEqual(ctx.exception.code, "PERMISSION_DENIED")
+
+
 if __name__ == "__main__":
     unittest.main()

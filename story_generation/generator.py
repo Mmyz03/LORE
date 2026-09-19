@@ -94,6 +94,7 @@ class StoryGenerator:
         """
         Detects and initializes the active AI provider based on environment variables.
         Supports OpenAI (default), Gemini, Groq, OpenRouter, and DeepSeek.
+        OPENAI_API_KEY is the canonical key for OpenAI. STORY_AI_API_KEY serves as fallback.
         """
         load_env_file()
 
@@ -101,15 +102,15 @@ class StoryGenerator:
         model = (os.getenv("STORY_AI_MODEL") or "").strip() or None
         custom_base_url = (os.getenv("STORY_AI_BASE_URL") or "").strip() or None
 
-        # Universal key override
+        # Universal fallback key
         story_ai_key = (os.getenv("STORY_AI_API_KEY") or "").strip()
 
-        # Provider-specific key lookups
-        openai_key = story_ai_key or (os.getenv("OPENAI_API_KEY") or "").strip()
-        gemini_key = story_ai_key or (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or "").strip()
-        groq_key = story_ai_key or (os.getenv("GROQ_API_KEY") or "").strip()
-        openrouter_key = story_ai_key or (os.getenv("OPENROUTER_API_KEY") or "").strip()
-        deepseek_key = story_ai_key or (os.getenv("DEEPSEEK_API_KEY") or "").strip()
+        # Provider-specific key lookups (Canonical provider variable prioritized, STORY_AI_API_KEY as fallback)
+        openai_key = (os.getenv("OPENAI_API_KEY") or "").strip() or story_ai_key
+        gemini_key = (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or "").strip() or story_ai_key
+        groq_key = (os.getenv("GROQ_API_KEY") or "").strip() or story_ai_key
+        openrouter_key = (os.getenv("OPENROUTER_API_KEY") or "").strip() or story_ai_key
+        deepseek_key = (os.getenv("DEEPSEEK_API_KEY") or "").strip() or story_ai_key
 
         # 1. Explicit provider configuration
         if provider_name == "openai":
@@ -141,7 +142,7 @@ class StoryGenerator:
             logger.info(f"[LORE AI] Initializing DeepSeek Provider (model: {ds_model})")
             return OpenAIStoryProvider(api_key=deepseek_key, model=ds_model, base_url=base_url)
 
-        # 2. Auto-detection if STORY_AI_PROVIDER is not explicitly specified
+        # 2. Auto-detection if STORY_AI_PROVIDER is not specified
         if story_ai_key:
             if story_ai_key.startswith("gsk_"):
                 return OpenAIStoryProvider(api_key=story_ai_key, model=model or "llama-3.3-70b-versatile", base_url=custom_base_url or "https://api.groq.com/openai/v1")
@@ -151,8 +152,8 @@ class StoryGenerator:
                 return GeminiStoryProvider(api_key=story_ai_key, model=model or "gemini-1.5-flash")
             return OpenAIStoryProvider(api_key=story_ai_key, model=model or "gpt-4o-mini", base_url=custom_base_url or "https://api.openai.com/v1")
 
-        # Inferred from specific keys when STORY_AI_PROVIDER is unset (OpenAI prioritized as default)
-        if openai_key:
+        # Inferred from specific provider keys
+        if openai_key and not any(p in openai_key.lower() for p in ["your_", "placeholder", "example"]):
             return OpenAIStoryProvider(api_key=openai_key, model=model or "gpt-4o-mini", base_url=custom_base_url or "https://api.openai.com/v1")
         if gemini_key:
             return GeminiStoryProvider(api_key=gemini_key, model=model or "gemini-1.5-flash")
@@ -163,11 +164,11 @@ class StoryGenerator:
         if deepseek_key:
             return OpenAIStoryProvider(api_key=deepseek_key, model=model or "deepseek-chat", base_url=custom_base_url or "https://api.deepseek.com/v1")
 
-        # Default fallback: OpenAI with empty key
+        # Default fallback: OpenAI
         openai_model = model or "gpt-4o-mini"
         base_url = custom_base_url or "https://api.openai.com/v1"
         logger.info(f"[LORE AI] Initializing OpenAI Provider (model: {openai_model})")
-        return OpenAIStoryProvider(api_key="", model=openai_model, base_url=base_url)
+        return OpenAIStoryProvider(api_key=openai_key, model=openai_model, base_url=base_url)
 
     def refresh_provider(self):
         """Re-evaluates environment variables and reconfigures provider if no custom provider was set."""
