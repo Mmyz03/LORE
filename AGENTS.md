@@ -18,32 +18,33 @@ Welcome to **LORE** (*Stories worth getting lost in*). This document serves as t
 
 ```
 LORE/
+├── index.py                   # Master entrypoint for local execution and Vercel zero-config
 ├── app/
-│   ├── app.py                     # Flask server & REST API endpoints
+│   ├── app.py                 # Flask server & REST API endpoints
 │   ├── templates/
-│   │   └── index.html             # Single-page AI Story Generator interface
+│   │   └── index.html         # Single-page AI Story Generator interface
 │   └── static/
-│       ├── style.css              # Dark luxury theme (#050507, champagne gold, glassmorphism)
-│       ├── script.js              # Frontend application controller & preset dispatcher
-│       ├── speech.js              # Web Speech API audiobook narration engine
-│       └── assets/                # SVGs & brand icons (lore-emblem.svg)
+│       ├── style.css          # Dark luxury theme (#050507, champagne gold, glassmorphism)
+│       ├── script.js          # Frontend application controller & preset dispatcher
+│       ├── speech.js          # Web Speech API audiobook narration engine
+│       └── assets/            # SVGs & brand icons (lore-emblem.svg)
 │
 ├── story_generation/
 │   ├── __init__.py
-│   ├── generator.py               # StoryGenerator master controller & provider dispatcher
-│   ├── prompts.py                 # System prompts, genre guidelines, length calibration & JSON schema
+│   ├── generator.py           # StoryGenerator master controller & provider dispatcher
+│   ├── prompts.py             # System prompts, genre guidelines, length calibration & JSON schema
 │   └── providers/
-│       ├── base.py                # BaseStoryProvider interface, JSON parser & error types
-│       ├── gemini_provider.py     # Google Gemini REST API integration
-│       └── openai_provider.py     # OpenAI / Groq / OpenRouter API integration
+│       ├── base.py            # BaseStoryProvider interface, JSON parser & error types
+│       ├── gemini_provider.py # Google Gemini REST API integration
+│       └── openai_provider.py # OpenAI / Groq / OpenRouter API integration
 │
-├── tests/                         # Automated test suite
+├── tests/                     # Automated test suite
 │   ├── test_story_generation.py   # AI generator unit, schema, length & provider tests
 │   ├── test_vercel_entrypoint.py  # Server routing, endpoints & presets tests
 │   └── test_mobile_and_perf.py    # Performance, asset integrity & responsive tokens
 │
-├── requirements.txt               # Core Python dependencies (flask, requests)
-└── README.md                      # Public project documentation
+├── requirements.txt           # Core Python dependencies (flask, requests)
+└── README.md                  # Public project documentation
 ```
 
 ---

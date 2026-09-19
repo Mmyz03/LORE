@@ -1,12 +1,14 @@
 """
-Test Suite: LORE Flask Application & Native Entry Point (app/app.py)
+Test Suite: LORE Flask Application & Vercel Entry Point (index.py & app/app.py)
 Verifies:
-1. app/app.py directly exports the canonical Flask `app` object.
-2. Direct root route '/' returns 200 OK with the LORE homepage.
-3. Static files (CSS, JS, SVG) are properly served by Flask.
-4. AI Genre Presets endpoint (/api/categories) returns all 12 supported genres.
-5. System Info endpoint (/api/info) returns AI engine readiness and provider metadata.
-6. AI Story Generation endpoint (/api/generate-story) responds with proper schema.
+1. Root `index.py` directly exports the canonical Flask `app` object for Vercel discovery.
+2. `app/app.py` directly defines the canonical Flask `app` object.
+3. Direct root route '/' returns 200 OK with the LORE homepage.
+4. Static files (CSS, JS, SVG) are properly served by Flask.
+5. AI Genre Presets endpoint (/api/categories) returns all 12 supported genres.
+6. System Info endpoint (/api/info) returns AI engine readiness and provider metadata.
+7. AI Story Generation endpoint (/api/generate-story) responds with proper schema.
+8. Flask route map contains all required routes without fragile rewrite middlewares.
 """
 
 import os
@@ -19,6 +21,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from app.app import app
+import index
 
 
 class TestFlaskApplication(unittest.TestCase):
@@ -30,12 +33,11 @@ class TestFlaskApplication(unittest.TestCase):
         import flask
         self.assertIsInstance(app, flask.Flask)
 
-    def test_vercel_api_index_export(self):
-        """Verify api/index.py exports the canonical Flask app instance."""
-        from api.index import app as vercel_app
+    def test_root_index_export(self):
+        """Verify root index.py exports the exact canonical Flask app instance."""
         import flask
-        self.assertIsInstance(vercel_app, flask.Flask)
-        self.assertIs(vercel_app, app)
+        self.assertIsInstance(index.app, flask.Flask)
+        self.assertIs(index.app, app)
 
     def test_root_route(self):
         """Visiting '/' directly should return 200 OK with the LORE homepage."""
@@ -94,43 +96,20 @@ class TestFlaskApplication(unittest.TestCase):
         js = response.get_data(as_text=True)
         self.assertIn("LoreSpeech", js)
 
-    def test_vercel_rewritten_root(self):
-        """When Vercel rewrites '/' to '/api/index', it returns 200 OK with the LORE homepage."""
-        response = self.client.get(
-            "/api/index",
-            headers={"X-Forwarded-Uri": "/"}
-        )
+    def test_static_emblem_svg(self):
+        """Static SVG brand emblem should be served correctly."""
+        response = self.client.get("/static/assets/lore-emblem.svg")
         self.assertEqual(response.status_code, 200)
-        html = response.get_data(as_text=True)
-        self.assertIn("LORE", html)
-        self.assertIn("Stories worth getting lost in", html)
+        self.assertIn("image/svg+xml", response.content_type)
 
-    def test_vercel_rewritten_info(self):
-        """When Vercel rewrites '/api/info' to '/api/index', it returns 200 OK."""
-        response = self.client.get(
-            "/api/index",
-            headers={"X-Forwarded-Uri": "/api/info"}
-        )
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertEqual(data["status"], "success")
-
-    def test_vercel_rewritten_categories(self):
-        """When Vercel rewrites '/api/categories' to '/api/index', it returns all 12 presets."""
-        response = self.client.get(
-            "/api/index",
-            headers={"X-Forwarded-Uri": "/api/categories"}
-        )
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.get_data(as_text=True))
-        self.assertEqual(data["total"], 12)
-
-    def test_vercel_raw_index_path_stripped(self):
-        """When Vercel invokes '/api/index' directly without headers, it defaults to the root homepage."""
-        response = self.client.get("/api/index")
-        self.assertEqual(response.status_code, 200)
-        html = response.get_data(as_text=True)
-        self.assertIn("LORE", html)
+    def test_route_map_completeness(self):
+        """Verify URL route map has all required endpoints on the deployed Flask instance."""
+        routes = {rule.rule for rule in app.url_map.iter_rules()}
+        self.assertIn("/", routes)
+        self.assertIn("/api/categories", routes)
+        self.assertIn("/api/generate-story", routes)
+        self.assertIn("/api/info", routes)
+        self.assertIn("/static/<path:filename>", routes)
 
 
 if __name__ == "__main__":
