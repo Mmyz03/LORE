@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LORE — Stories worth getting lost in.</title>
-    <meta name="description" content="LORE — Discover captivating stories worth getting lost in. Tell us what you'd like to read and explore timeless tales matched to your mood.">
+    <meta name="description" content="LORE — AI-Powered Story Generation Platform. Select a genre preset or describe any story idea, and LORE writes complete, publication-quality original narratives with voice narration.">
     
     <!-- Favicon using official standalone LORE emblem -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='assets/lore-emblem.svg') }}">
@@ -33,20 +33,21 @@
             </a>
 
             <nav class="nav-links">
-                <a href="#search-section" class="nav-link active" id="nav-home">Home</a>
-                <a href="#mood-section" class="nav-link" id="nav-explore">Explore</a>
+                <a href="#hero-section" class="nav-link active" id="nav-home">Home</a>
+                <a href="#presets-section" class="nav-link" id="nav-presets">Presets</a>
+                <a href="#search-card" class="nav-link" id="nav-generate">Generate</a>
                 <button type="button" class="nav-link nav-btn" id="btn-about">About</button>
                 <div class="nav-status">
                     <span class="status-indicator"></span>
-                    <span class="status-text" id="db-status-pill">Ready to Explore</span>
+                    <span class="status-text" id="db-status-pill">AI Story Engine Ready</span>
                 </div>
             </nav>
         </div>
     </header>
 
     <main class="main-wrapper">
-        <!-- Hero Section -->
-        <section class="hero-section" id="search-section">
+        <!-- Hero Section: AI Story Generation -->
+        <section class="hero-section" id="hero-section">
             <div class="container hero-container">
                 
                 <!-- Hero Centerpiece Brand Presentation -->
@@ -59,17 +60,124 @@
                 </div>
 
                 <div class="hero-prompt-lead">
-                    <h2 class="hero-mood-question">What are you in the mood for?</h2>
+                    <h2 class="hero-mood-question">What story shall we weave today?</h2>
+                    <p class="hero-mood-subtitle">Select a category preset or describe your premise, characters, and atmosphere. LORE crafts a complete, original short story with audio narration.</p>
                 </div>
 
-                <!-- Story Request Input (Centerpiece) -->
+                <!-- Genre Presets Ribbon -->
+                <div class="presets-section" id="presets-section">
+                    <div class="presets-label-row">
+                        <span class="presets-heading">&#10022; Genre Presets</span>
+                        <span class="presets-subhint">Click to choose a preset or customize below</span>
+                    </div>
+
+                    <div class="mood-grid" id="mood-grid">
+                        <button type="button" class="mood-card" data-category="Mystery">
+                            <span class="mood-icon">🔍</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Mystery</span>
+                                <span class="mood-desc">Secrets, clues &amp; deduction</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Horror">
+                            <span class="mood-icon">👻</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Horror</span>
+                                <span class="mood-desc">Atmospheric dread &amp; chills</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Romance">
+                            <span class="mood-icon">💖</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Romance</span>
+                                <span class="mood-desc">Devotion &amp; tender bonds</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Fantasy">
+                            <span class="mood-icon">🔮</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Fantasy</span>
+                                <span class="mood-desc">Mythical realms &amp; wonder</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Adventure">
+                            <span class="mood-icon">🧭</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Adventure</span>
+                                <span class="mood-desc">Survival &amp; expeditions</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Science Fiction">
+                            <span class="mood-icon">🚀</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Sci-Fi</span>
+                                <span class="mood-desc">Cosmic &amp; future worlds</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Thriller">
+                            <span class="mood-icon">⚡</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Thriller</span>
+                                <span class="mood-desc">Cat-and-mouse suspense</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Comedy">
+                            <span class="mood-icon">🎭</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Comedy</span>
+                                <span class="mood-desc">Wit &amp; clever mischief</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Emotional">
+                            <span class="mood-icon">🍃</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Emotional</span>
+                                <span class="mood-desc">Bittersweet &amp; heartfelt</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Friendship">
+                            <span class="mood-icon">🤝</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Friendship</span>
+                                <span class="mood-desc">Loyalty &amp; lifelong ties</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Moral">
+                            <span class="mood-icon">⚖️</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Moral</span>
+                                <span class="mood-desc">Wisdom &amp; timeless fables</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="mood-card" data-category="Bedtime">
+                            <span class="mood-icon">🌙</span>
+                            <div class="mood-info">
+                                <span class="mood-name">Bedtime</span>
+                                <span class="mood-desc">Gentle soothing tales</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Story Request Input Card (Centerpiece) -->
                 <div class="search-card-wrapper">
                     <div class="search-card" id="search-card">
                         <div class="search-card-header">
-                            <span class="search-card-label">&#10022; Tell us what you'd like to read...</span>
+                            <span class="search-card-label">&#10022; Your Story Idea</span>
                             <span class="selected-cat-badge" id="active-category-indicator" style="display: none;">
                                 <span id="active-cat-name">Category</span>
-                                <button type="button" class="btn-remove-cat" id="btn-remove-cat" title="Remove category filter">&times;</button>
+                                <button type="button" class="btn-remove-cat" id="btn-remove-cat" title="Remove category preset">&times;</button>
                             </span>
                         </div>
 
@@ -77,7 +185,7 @@
                             <textarea 
                                 id="story-query-input" 
                                 class="search-input" 
-                                placeholder="A scary story about a haunted forest at night..." 
+                                placeholder="Describe your premise, characters, setting, or twist (e.g. A psychological horror story about a student trapped inside an abandoned hospital...)" 
                                 rows="3"
                                 spellcheck="false"
                             ></textarea>
@@ -86,9 +194,28 @@
                             </button>
                         </div>
 
+                        <!-- Story Length Controls -->
+                        <div class="length-selector-row">
+                            <span class="length-label">Story Length:</span>
+                            <div class="length-pills" role="radiogroup" aria-label="Story Length Selection">
+                                <button type="button" class="btn-length-pill active" data-length="default" role="radio" aria-checked="true" title="Approximately 2 readable pages (~900-1400 words)">
+                                    <span class="pill-title">Normal</span>
+                                    <span class="pill-sub">~2 Pages</span>
+                                </button>
+                                <button type="button" class="btn-length-pill" data-length="short" role="radio" aria-checked="false" title="Quick single-page story (~450-750 words)">
+                                    <span class="pill-title">Quick</span>
+                                    <span class="pill-sub">~1 Page</span>
+                                </button>
+                                <button type="button" class="btn-length-pill" data-length="long" role="radio" aria-checked="false" title="Extended multi-page story (~1800-2500 words)">
+                                    <span class="pill-title">Extended</span>
+                                    <span class="pill-sub">3–5 Pages</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="search-card-footer">
                             <div class="search-helper-text">
-                                <span>Press <strong>Enter</strong> to find</span>
+                                <span>Press <strong>Ctrl + Enter</strong> or click Generate</span>
                             </div>
                             <button type="button" id="btn-submit-search" class="btn-find-story">
                                 <span class="btn-text">Generate Story</span>
@@ -103,25 +230,25 @@
 
                     <!-- Example Prompt Chips -->
                     <div class="example-prompts-container">
-                        <span class="examples-heading">Try:</span>
+                        <span class="examples-heading">Try an idea:</span>
                         <div class="example-chips">
-                            <button type="button" class="example-chip" data-prompt="Horror story at midnight">
-                                “Horror story at midnight”
+                            <button type="button" class="example-chip" data-category="Mystery" data-prompt="A dark murder mystery set in an abandoned hotel where the detective discovers that the victim was secretly connected to him.">
+                                “Murder mystery in an abandoned hotel”
                             </button>
-                            <button type="button" class="example-chip" data-prompt="Funny story about friendship">
-                                “Funny story about friendship”
+                            <button type="button" class="example-chip" data-category="Horror" data-prompt="A chilling psychological horror story about an antique mirror that reflects a room that doesn't exist.">
+                                “Haunting mirror in an antique shop”
                             </button>
-                            <button type="button" class="example-chip" data-prompt="Mysterious detective story">
-                                “Mysterious detective story”
+                            <button type="button" class="example-chip" data-category="Romance" data-prompt="A romantic story about two estranged childhood sweethearts who cross paths on a midnight train through the Alps.">
+                                “Romantic encounter on a midnight train”
                             </button>
-                            <button type="button" class="example-chip" data-prompt="Short bedtime story">
-                                “Short bedtime story”
+                            <button type="button" class="example-chip" data-category="Fantasy" data-prompt="A fantasy adventure about an apprentice cartographer who discovers an uncharted kingdom living inside a storm.">
+                                “Fantasy realm inside a perpetual storm”
                             </button>
-                            <button type="button" class="example-chip" data-prompt="Sci-Fi space exploration mission">
-                                “Sci-Fi space mission”
+                            <button type="button" class="example-chip" data-category="Science Fiction" data-prompt="A sci-fi mission where the lone engineer on a deep-space outpost receives a transmission sent from yesterday.">
+                                “Sci-Fi signal from deep space”
                             </button>
-                            <button type="button" class="example-chip" data-prompt="An emotional family memory">
-                                “Emotional family memory”
+                            <button type="button" class="example-chip" data-category="Emotional" data-prompt="A poignant story about an aging violinist preparing to play one final secret waltz for his lost love.">
+                                “Emotional reunion &amp; final waltz”
                             </button>
                         </div>
                     </div>
@@ -129,115 +256,7 @@
             </div>
         </section>
 
-        <!-- Category Exploration Section ("Explore by mood") -->
-        <section class="mood-section" id="mood-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Explore by mood</h2>
-                    <p class="section-subtitle">Select a genre to browse stories matched to that specific atmosphere</p>
-                </div>
-
-                <div class="mood-grid" id="mood-grid">
-                    <button type="button" class="mood-card" data-category="Horror">
-                        <span class="mood-icon">👻</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Horror</span>
-                            <span class="mood-desc">Chilling &amp; eerie tales</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Mystery">
-                        <span class="mood-icon">🔍</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Mystery</span>
-                            <span class="mood-desc">Enigmas &amp; investigations</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Adventure">
-                        <span class="mood-icon">🧭</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Adventure</span>
-                            <span class="mood-desc">Quests &amp; expeditions</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Romance">
-                        <span class="mood-icon">💖</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Romance</span>
-                            <span class="mood-desc">Serendipity &amp; deep love</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Comedy">
-                        <span class="mood-icon">🎭</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Comedy</span>
-                            <span class="mood-desc">Lighthearted &amp; hilarious</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Fantasy">
-                        <span class="mood-icon">🔮</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Fantasy</span>
-                            <span class="mood-desc">Magic &amp; mythical realms</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Sci-Fi">
-                        <span class="mood-icon">🚀</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Sci-Fi</span>
-                            <span class="mood-desc">Space &amp; future worlds</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Thriller">
-                        <span class="mood-icon">⚡</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Thriller</span>
-                            <span class="mood-desc">Suspense &amp; high stakes</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Friendship">
-                        <span class="mood-icon">🤝</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Friendship</span>
-                            <span class="mood-desc">Loyalty &amp; mutual bonds</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Emotional">
-                        <span class="mood-icon">🍃</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Emotional</span>
-                            <span class="mood-desc">Bittersweet &amp; heartfelt</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Moral">
-                        <span class="mood-icon">⚖️</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Moral</span>
-                            <span class="mood-desc">Wisdom &amp; timeless lessons</span>
-                        </div>
-                    </button>
-
-                    <button type="button" class="mood-card" data-category="Bedtime Stories">
-                        <span class="mood-icon">🌙</span>
-                        <div class="mood-info">
-                            <span class="mood-name">Bedtime</span>
-                            <span class="mood-desc">Calm &amp; peaceful slumber</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Loading / Shimmer State with Standalone Emblem -->
+        <!-- Loading / Generation State with Standalone Emblem -->
         <section id="loading-state-section" class="loading-state-section" style="display: none;">
             <div class="container reader-container">
                 <div class="skeleton-reader-card">
@@ -255,13 +274,14 @@
                     <div class="skeleton-line" style="width: 70%;"></div>
                     <div class="loading-message">
                         <div class="pulse-ring"></div>
-                        <span>Finding a story for you...</span>
+                        <span id="loading-status-text">LORE is writing your story...</span>
                     </div>
+                    <p class="loading-subtext">Weaving character voices, atmosphere, rising conflict, and narrative progression.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Story Result Reader Section (LORE Subtle Branding) -->
+        <!-- Generated Story Result Reader Section -->
         <section id="story-section" class="story-result-section" style="display: none;">
             <div class="container reader-container">
                 <article class="story-reader-card">
@@ -271,7 +291,7 @@
                             <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="story-brand-mini-emblem">
                             <span class="story-brand-name">LORE</span>
                         </div>
-                        <span class="story-brand-tag">A story picked for you</span>
+                        <span class="story-brand-tag" id="story-origin-tag">Original Story • Generated for you</span>
                     </div>
 
                     <div class="reader-header-divider"></div>
@@ -279,10 +299,10 @@
                     <!-- Reader Top Header -->
                     <div class="reader-top-bar">
                         <div class="genre-pill-wrapper">
-                            <span class="genre-badge" id="story-genre-tag">HORROR</span>
+                            <span class="genre-badge" id="story-genre-tag">MYSTERY</span>
                         </div>
                         <div class="reader-controls">
-                            <span class="reading-estimate" id="story-reading-time">2 min read</span>
+                            <span class="reading-estimate" id="story-reading-time">4 min read (950 words)</span>
                             <div class="font-size-toggles">
                                 <button type="button" class="btn-text-size" id="btn-decrease-font" title="Smaller font">A-</button>
                                 <button type="button" class="btn-text-size" id="btn-increase-font" title="Larger font">A+</button>
@@ -291,13 +311,19 @@
                     </div>
 
                     <!-- Story Main Title -->
-                    <h2 class="reader-title" id="story-title-display">The Whispering Forest</h2>
+                    <h2 class="reader-title" id="story-title-display">The Last Room</h2>
 
                     <!-- Story Metadata Tags -->
-                    <div class="story-tags-row">
-                        <span class="story-chip tag-theme" id="story-theme-tag">Ghost</span>
-                        <span class="story-chip tag-setting" id="story-setting-tag">Forest at Night</span>
-                        <span class="story-chip tag-mood" id="story-mood-tag">Scary</span>
+                    <div class="story-tags-row" id="story-tags-row">
+                        <span class="story-chip tag-theme" id="story-theme-tag">Mystery</span>
+                        <span class="story-chip tag-setting" id="story-setting-tag">Atmospheric Setting</span>
+                        <span class="story-chip tag-mood" id="story-mood-tag">Engaging</span>
+                    </div>
+
+                    <!-- Story Summary Callout -->
+                    <div class="story-summary-box" id="story-summary-box" style="display: none;">
+                        <span class="summary-label">Synopsis:</span>
+                        <p class="summary-text" id="story-summary-text"></p>
                     </div>
 
                     <!-- Voice Narration Toolbar -->
@@ -373,26 +399,10 @@
 
                     <!-- Story Narrative Text -->
                     <div class="reader-body" id="story-text-display">
-                        <!-- Narrative content inserted here -->
+                        <!-- Narrative content inserted dynamically -->
                     </div>
 
                     <div class="reader-divider"></div>
-
-                    <!-- "Why this story?" Explainability Section -->
-                    <div class="explainability-box">
-                        <div class="explain-box-header">
-                            <div class="explain-heading">
-                                <span class="check-badge">&#10003;</span>
-                                <h3>Why this story?</h3>
-                            </div>
-                            <span class="relevance-score" id="story-relevance-score">94% Match</span>
-                        </div>
-                        <p class="explain-subtext">Matched your request using semantic NLP intent analysis:</p>
-
-                        <div class="reasons-grid" id="story-reasons-container">
-                            <!-- Dynamic reason tags -->
-                        </div>
-                    </div>
 
                     <!-- Story Action Buttons -->
                     <div class="reader-actions-footer">
@@ -400,7 +410,7 @@
                             <svg class="refresh-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
                             </svg>
-                            <span>Find Another Story</span>
+                            <span id="btn-find-another-label">Generate Another Story</span>
                         </button>
 
                         <button type="button" id="btn-copy-story" class="btn-secondary-action">
@@ -413,36 +423,23 @@
 
                         <button type="button" id="btn-new-search" class="btn-secondary-action">
                             <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                             </svg>
-                            <span>New Search</span>
+                            <span>New Story Idea</span>
                         </button>
                     </div>
                 </article>
             </div>
         </section>
 
-        <!-- Empty State (Before search) -->
-        <section id="empty-state-section" class="empty-state-section">
-            <div class="container reader-container">
-                <div class="empty-state-box">
-                    <div class="empty-brand-emblem-frame">
-                        <img src="{{ url_for('static', filename='assets/lore-emblem.svg') }}" alt="LORE Emblem" class="empty-brand-emblem">
-                    </div>
-                    <h3>Your next story is waiting.</h3>
-                    <p>Describe the kind of story you're in the mood for above, or select one of the genres to get lost in a tale.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- No Results / Error State -->
+        <!-- Error State Section -->
         <section id="error-state-section" class="error-state-section" style="display: none;">
             <div class="container reader-container">
                 <div class="error-state-box">
                     <div class="error-icon">&#9888;</div>
-                    <h3 id="error-title">We couldn't find a close match.</h3>
-                    <p id="error-message">Try describing your story in a different way or explore one of the mood categories.</p>
+                    <h3 id="error-title">Story generation is temporarily unavailable.</h3>
+                    <p id="error-message">Please check your request or verify AI credentials.</p>
                     <div class="error-actions">
                         <button type="button" class="btn-retry" id="btn-error-retry">Try Again</button>
                     </div>
@@ -464,36 +461,35 @@
             <div class="modal-body">
                 <p class="modal-tagline">Stories worth getting lost in.</p>
                 <p class="modal-intro">
-                    <strong>LORE</strong> is an intelligent, atmospheric story recommendation and retrieval system designed to connect readers with captivating public-domain literature tailored to their exact mood, setting, and theme.
+                    <strong>LORE</strong> is an AI-powered storytelling platform that turns your premises, characters, and genre moods into complete, publication-quality short stories.
                 </p>
 
                 <div class="architecture-flow">
-                    <h4>How Recommendation Works</h4>
                     <div class="flow-step">
                         <span class="step-badge">1</span>
                         <div>
-                            <strong>Natural Language Intent Parsing</strong>
-                            <p>Extracts explicit and implicit categories, themes, moods, and setting keywords from your prompt.</p>
+                            <strong>Choose a Preset or Describe Your Idea</strong>
+                            <p>Pick from 12 genre presets or provide your own natural-language characters, setting, atmosphere, twists, and length constraints.</p>
                         </div>
                     </div>
                     <div class="flow-step">
                         <span class="step-badge">2</span>
                         <div>
-                            <strong>TF-IDF &amp; Cosine Similarity</strong>
-                            <p>Converts your query into a high-dimensional vector and measures geometric closeness against all corpus documents.</p>
+                            <strong>Complete Narrative Synthesis</strong>
+                            <p>LORE's AI engine composes full-length narratives with a complete 6-stage arc: hook, exposition, conflict, rising tension, climax, and resolution.</p>
                         </div>
                     </div>
                     <div class="flow-step">
                         <span class="step-badge">3</span>
                         <div>
-                            <strong>Feature Ranking &amp; Explainability</strong>
-                            <p>Combines text similarity with metadata bonuses to rank candidates and display clear match reasons.</p>
+                            <strong>Immersive Reading &amp; Audio Narration</strong>
+                            <p>Enjoy browser-native Web Speech voice narration with 5 natural voices, 8-speed playback, and 10-second skip controls.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-callout">
-                    <span>⚡ 100% Curated Retrieval &bull; Zero External Generative AI APIs</span>
+                    <span>✨ Built for immersive reading, atmosphere, and authentic literary voice.</span>
                 </div>
             </div>
         </div>
@@ -518,7 +514,7 @@
     <!-- Mini Sticky Audiobook Player (Bottom Viewport) -->
     <div id="mini-audio-player" class="mini-audio-player" style="display: none;" role="region" aria-label="Floating Audiobook Player">
         <div class="mini-audio-card">
-            <!-- Top Controls: Back 10s, Play/Pause, Forward 10s, Stop -->
+            <!-- Top Controls -->
             <div class="mini-audio-top-row">
                 <div class="mini-transport-controls">
                     <button type="button" id="btn-mini-back" class="btn-mini-skip" aria-label="Back 10 seconds" title="Back 10s (←)">
@@ -553,7 +549,7 @@
             <div class="mini-audio-bottom-row">
                 <div class="mini-title-group">
                     <span class="mini-speaker-icon">🔊</span>
-                    <span class="mini-audio-title" id="mini-audio-title">The Whispering Forest</span>
+                    <span class="mini-audio-title" id="mini-audio-title">Story Title</span>
                 </div>
                 <div class="mini-meta-group">
                     <span class="mini-audio-speed" id="mini-audio-speed">1×</span>

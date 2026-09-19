@@ -475,6 +475,105 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
     background: rgba(255, 255, 255, 0.25);
 }
 
+/* Presets Section in Hero */
+.presets-section {
+    width: 100%;
+    max-width: 960px;
+    margin-bottom: clamp(20px, 3.5vw, 30px);
+}
+
+.presets-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.presets-heading {
+    font-size: clamp(0.78rem, 2vw, 0.84rem);
+    font-weight: 700;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.presets-subhint {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
+/* Story Length Selector Controls */
+.length-selector-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+}
+
+.length-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.length-pills {
+    display: inline-flex;
+    gap: 6px;
+    background: var(--surface);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+
+.btn-length-pill {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition-fast);
+}
+
+.btn-length-pill:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.btn-length-pill.active {
+    background: var(--surface-hover);
+    border-color: var(--gold-border);
+    color: var(--gold-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.btn-length-pill .pill-title {
+    font-weight: 600;
+}
+
+.btn-length-pill .pill-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.btn-length-pill.active .pill-sub {
+    color: var(--gold-dark);
+}
+
 .search-card-footer {
     display: flex;
     justify-content: space-between;
@@ -1923,6 +2022,401 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--gold-light);
+}
+
+/* ==========================================================================
+   Curated Story Library & Drawer Styles
+   ========================================================================== */
+.section-badge {
+    display: inline-block;
+    background: rgba(230, 202, 133, 0.12);
+    border: 1px solid var(--gold-border);
+    color: var(--gold-primary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.hero-mood-subtitle {
+    color: var(--text-secondary);
+    font-size: clamp(0.88rem, 2vw, 1.02rem);
+    max-width: 580px;
+    margin: 8px auto 0 auto;
+}
+
+.story-summary-box {
+    background: rgba(230, 202, 133, 0.05);
+    border-left: 3px solid var(--gold-primary);
+    padding: 12px 16px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 20px;
+}
+
+.summary-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold-primary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.summary-text {
+    font-size: 0.92rem;
+    color: var(--text-story);
+    line-height: 1.5;
+}
+
+.story-author-badge {
+    font-size: 0.84rem;
+    color: var(--text-gold);
+    font-style: italic;
+    margin-left: 10px;
+}
+
+/* Category Drawer */
+.category-stories-drawer {
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(20px, 4vw, 32px);
+    box-shadow: var(--shadow-card);
+    animation: drawerSlide 0.35s ease-out;
+}
+
+@keyframes drawerSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.drawer-title-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.drawer-icon {
+    font-size: 2rem;
+}
+
+.drawer-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.drawer-tagline {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 2px;
+}
+
+.drawer-close-btn {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: var(--transition-fast);
+}
+
+.drawer-close-btn:hover {
+    background: var(--surface-hover);
+    color: #ffffff;
+    border-color: var(--gold-border);
+}
+
+.library-story-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.library-story-card {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: var(--transition-fast);
+}
+
+.library-story-card:hover {
+    border-color: var(--gold-border);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+.lib-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.lib-card-genre {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+}
+
+.lib-card-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.lib-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.lib-card-author {
+    font-size: 0.82rem;
+    color: var(--text-gold);
+    margin-bottom: 10px;
+}
+
+.lib-card-summary {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    margin-bottom: 16px;
+    flex-grow: 1;
+}
+
+.btn-read-library-story {
+    background: var(--surface);
+    border: 1px solid var(--gold-border);
+    color: var(--gold-light);
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition-fast);
+    align-self: flex-start;
+}
+
+.btn-read-library-story:hover {
+    background: var(--gold-primary);
+    color: #080c14;
+    border-color: var(--gold-primary);
+}
+
+/* ==========================================================================
+   Featured Section & How LORE Works
+   ========================================================================== */
+.featured-section {
+    padding: clamp(36px, 6vw, 60px) 0;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.featured-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.featured-story-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-fast);
+}
+
+.featured-story-card:hover {
+    border-color: var(--gold-border);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.featured-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.featured-card-genre {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--gold-primary);
+}
+
+.featured-card-time {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.featured-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+}
+
+.featured-card-author {
+    font-size: 0.85rem;
+    color: var(--text-gold);
+    margin-bottom: 12px;
+}
+
+.featured-card-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.how-it-works-section {
+    padding: clamp(36px, 6vw, 60px) 0;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--background-alt);
+}
+
+.how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.how-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: clamp(24px, 4vw, 36px);
+    position: relative;
+    transition: var(--transition-fast);
+}
+
+.how-card:hover {
+    border-color: var(--gold-border);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+
+.how-card-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--gold-primary);
+    background: rgba(230, 202, 133, 0.1);
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    margin-bottom: 14px;
+}
+
+.how-card-icon {
+    font-size: 2.2rem;
+    margin-bottom: 14px;
+}
+
+.how-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.how-card p {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   Dedicated Library Story Reader Modal
+   ========================================================================== */
+.library-modal-dialog {
+    max-width: 820px;
+    max-height: 92vh;
+}
+
+.modal-story-header {
+    margin-bottom: 20px;
+}
+
+.modal-story-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.modal-story-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.25;
+    margin-bottom: 6px;
+}
+
+.modal-story-author {
+    font-size: 1rem;
+    color: var(--text-gold);
+    margin-bottom: 4px;
+}
+
+.modal-story-citation {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.modal-story-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-reader-body {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-right: 10px;
 }
 
 /* ==========================================================================

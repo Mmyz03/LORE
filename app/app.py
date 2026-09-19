@@ -1,13 +1,17 @@
 """
-AI-Based Story Recommendation and Retrieval System
+LORE — AI-Powered Story Generation Platform
 Module: Flask Web Backend & REST API
 """
 
 import os
 import sys
-import json
 import time
+import logging
 from flask import Flask, render_template, request, jsonify
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+logger = logging.getLogger("lore.app")
 
 # Resolve robust absolute paths relative to this file
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,7 +23,8 @@ STATIC_DIR = os.path.join(APP_DIR, "static")
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from recommendation.story_recommender import StoryRecommender
+from story_generation.generator import StoryGenerator
+from story_generation.providers.base import StoryGenerationError
 
 app = Flask(
     __name__,
@@ -27,186 +32,239 @@ app = Flask(
     static_folder=STATIC_DIR
 )
 
-# Model and dataset absolute paths
-VEC_PATH = os.path.join(PROJECT_ROOT, "models", "tfidf_vectorizer.pkl")
-IDX_PATH = os.path.join(PROJECT_ROOT, "models", "story_index.pkl")
-EVAL_PATH = os.path.join(PROJECT_ROOT, "evaluation", "evaluation_results.json")
+# AI Genre Presets
+CATEGORY_PRESETS = [
+    {
+        "id": "mystery",
+        "name": "Mystery",
+        "icon": "🔍",
+        "tagline": "Secrets, clues, suspects, and deduction",
+        "sample_prompt": "A locked-room mystery during a storm at an isolated seaside lighthouse."
+    },
+    {
+        "id": "horror",
+        "name": "Horror",
+        "icon": "👻",
+        "tagline": "Atmospheric dread, psychological chills, and the unknown",
+        "sample_prompt": "An antique mirror reflecting a room that does not exist."
+    },
+    {
+        "id": "romance",
+        "name": "Romance",
+        "icon": "💖",
+        "tagline": "Devotion, heartfelt bonds, and tender connections",
+        "sample_prompt": "Two estranged sweethearts who cross paths on a midnight train through the Alps."
+    },
+    {
+        "id": "fantasy",
+        "name": "Fantasy",
+        "icon": "🔮",
+        "tagline": "Mythical realms, ancient wonder, and enchanted lore",
+        "sample_prompt": "An apprentice cartographer who discovers an uncharted kingdom living inside a storm."
+    },
+    {
+        "id": "adventure",
+        "name": "Adventure",
+        "icon": "🧭",
+        "tagline": "Expeditions, wilderness survival, and daring quests",
+        "sample_prompt": "A lone traveler in the sub-zero Yukon fighting for survival against the frost."
+    },
+    {
+        "id": "sci-fi",
+        "name": "Science Fiction",
+        "icon": "🚀",
+        "tagline": "Cosmic frontiers, futuristic technology, and deep space",
+        "sample_prompt": "A lone engineer on a deep-space outpost receives a transmission sent from yesterday."
+    },
+    {
+        "id": "thriller",
+        "name": "Thriller",
+        "icon": "⚡",
+        "tagline": "Cat-and-mouse suspense, ticking clocks, and high stakes",
+        "sample_prompt": "A cybersecurity agent who discovers an intruder operating from inside their own safehouse."
+    },
+    {
+        "id": "comedy",
+        "name": "Comedy",
+        "icon": "🎭",
+        "tagline": "Wit, playful mischief, and delightful irony",
+        "sample_prompt": "A chaotic dinner party where every guest is secretly impersonating a royal diplomat."
+    },
+    {
+        "id": "emotional",
+        "name": "Emotional",
+        "icon": "🍃",
+        "tagline": "Bittersweet memories, human empathy, and heartfelt depth",
+        "sample_prompt": "An aging violinist preparing to perform one final secret waltz for his lost love."
+    },
+    {
+        "id": "friendship",
+        "name": "Friendship",
+        "icon": "🤝",
+        "tagline": "Loyalty, lifelong promises, and unshakable bonds",
+        "sample_prompt": "Two lifelong friends returning to their hometown to fulfill a pact made thirty years ago."
+    },
+    {
+        "id": "moral",
+        "name": "Moral",
+        "icon": "⚖️",
+        "tagline": "Timeless wisdom, ethical crossroads, and profound fables",
+        "sample_prompt": "A proud merchant who learns the unexpected true cost of getting everything he desired."
+    },
+    {
+        "id": "bedtime",
+        "name": "Bedtime",
+        "icon": "🌙",
+        "tagline": "Gentle, tranquil, and soothing nighttime tales",
+        "sample_prompt": "A quiet journey of a guardian star guiding woodland creatures through a peaceful forest."
+    }
+]
 
-# Global Recommender Instance (Loaded once at startup)
-RECOMMENDER = None
-MODEL_LOADED = False
-LOAD_ERROR = None
+# Global AI Generator Instance
+GENERATOR = None
 
 
-def init_recommender():
-    """Loads the story index and TF-IDF models once at application startup."""
-    global RECOMMENDER, MODEL_LOADED, LOAD_ERROR
-    try:
-        if os.path.exists(VEC_PATH) and os.path.exists(IDX_PATH):
-            RECOMMENDER = StoryRecommender(vectorizer_path=VEC_PATH, index_path=IDX_PATH)
-            MODEL_LOADED = True
-            LOAD_ERROR = None
-            print("[+] StoryRecommender successfully initialized in memory.")
-        else:
-            MODEL_LOADED = False
-            LOAD_ERROR = "Model index files not found. Please run preprocessing and tfidf_model first."
-            print(f"[!] Warning: {LOAD_ERROR}")
-    except Exception as e:
-        MODEL_LOADED = False
-        LOAD_ERROR = str(e)
-        print(f"[!] Error loading recommender: {e}")
+def get_generator() -> StoryGenerator:
+    """Lazily initializes and returns the StoryGenerator controller."""
+    global GENERATOR
+    if GENERATOR is None:
+        GENERATOR = StoryGenerator()
+        logger.info(f"[+] StoryGenerator initialized. Status: {GENERATOR.get_status()}")
+    return GENERATOR
 
 
-# Initialize at server boot
-init_recommender()
+# Initialize at boot
+get_generator()
 
 
 @app.route("/")
 def index():
-    """Renders the main story discovery web application."""
+    """Renders the LORE AI Story Generation web application."""
     return render_template("index.html")
 
 
-@app.route("/api/info", methods=["GET"])
-def get_info():
-    """Returns application status, dataset metrics, and category list."""
-    global RECOMMENDER, MODEL_LOADED, LOAD_ERROR
-    if not MODEL_LOADED:
-        init_recommender()
+# =============================================================================
+# AI STORY GENERATION REST API
+# =============================================================================
 
-    if not MODEL_LOADED:
+@app.route("/api/generate-story", methods=["POST"])
+def generate_story():
+    """
+    Primary AI Story Generation Endpoint.
+    Receives JSON:
+    {
+        "prompt": str (optional if category is present),
+        "category": str (optional),
+        "length": str (optional: "default", "short", "long", or custom),
+        "is_another": bool (optional),
+        "previous_titles": list (optional)
+    }
+    Returns JSON:
+    {
+        "success": true,
+        "story": {
+            "title": str,
+            "genre": str,
+            "summary": str,
+            "content": str,
+            "tags": list[str],
+            "word_count": int,
+            "reading_time_min": int,
+            "model": str,
+            "provider": str,
+            "latency_ms": float
+        }
+    }
+    """
+    generator = get_generator()
+
+    data = request.get_json() or {}
+    prompt = (data.get("prompt") or "").strip()
+    category = (data.get("category") or "").strip()
+    length = (data.get("length") or "default").strip()
+    is_another = bool(data.get("is_another", False))
+    previous_titles = data.get("previous_titles", [])
+    if not isinstance(previous_titles, list):
+        previous_titles = []
+
+    if not prompt and not category:
         return jsonify({
-            "status": "error",
-            "model_loaded": False,
-            "message": LOAD_ERROR
-        }), 503
+            "success": False,
+            "error": "Please describe the story or select a genre preset.",
+            "code": "EMPTY_PROMPT"
+        }), 400
 
-    df = RECOMMENDER.stories_df
-    categories_counts = df['category'].value_counts().to_dict()
+    if len(prompt) > 3000:
+        prompt = prompt[:3000]
 
-    return jsonify({
-        "status": "success",
-        "model_loaded": True,
-        "total_stories": len(df),
-        "total_categories": len(RECOMMENDER.categories),
-        "categories": RECOMMENDER.categories,
-        "category_counts": categories_counts,
-        "features": ["TF-IDF Vectorization", "Cosine Similarity", "NLP Query Understanding", "Feature Matching", "Explainable AI"]
-    })
+    start_time = time.time()
+
+    try:
+        story = generator.generate(
+            prompt=prompt,
+            category=category if category else None,
+            length=length,
+            is_another=is_another,
+            previous_titles=previous_titles
+        )
+        elapsed_ms = round((time.time() - start_time) * 1000, 2)
+        story["latency_ms"] = elapsed_ms
+
+        return jsonify({
+            "success": True,
+            "story": story
+        })
+
+    except StoryGenerationError as sge:
+        logger.error(f"[LORE AI Generation Error] {sge.code}: {sge.message}")
+        return jsonify({
+            "success": False,
+            "error": sge.message,
+            "code": sge.code
+        }), sge.status_code
+
+    except Exception as e:
+        logger.error(f"[LORE Unexpected Generation Error] {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": "LORE couldn't create the story right now. Please try again.",
+            "code": "SERVER_ERROR"
+        }), 500
 
 
 @app.route("/api/categories", methods=["GET"])
 def get_categories():
-    """Returns the list of supported story genres."""
-    global RECOMMENDER, MODEL_LOADED
-    if not MODEL_LOADED:
-        init_recommender()
-    if not MODEL_LOADED:
-        return jsonify({"status": "error", "message": "Model not loaded"}), 503
-
+    """Returns the list of supported AI story genre presets and metadata."""
     return jsonify({
         "status": "success",
-        "categories": RECOMMENDER.categories
+        "total": len(CATEGORY_PRESETS),
+        "categories": CATEGORY_PRESETS
     })
 
 
-@app.route("/api/recommend", methods=["POST"])
-def recommend_story():
-    """
-    Primary story recommendation endpoint:
-    Receives JSON: { "query": str, "category": str (optional), "exclude_ids": list (optional) }
-    Returns JSON: { "status": "success", "story": {...}, "why_this_story": [...], "relevance_percentage": int }
-    """
-    global RECOMMENDER, MODEL_LOADED
+@app.route("/api/info", methods=["GET"])
+def get_info():
+    """Returns application status, AI provider status, and engine readiness."""
+    generator = get_generator()
+    gen_status = generator.get_status() if generator else {"available": False, "provider": "None"}
 
-    if not MODEL_LOADED:
-        init_recommender()
-        if not MODEL_LOADED:
-            return jsonify({
-                "status": "error",
-                "message": "Recommendation system is initializing or missing model files."
-            }), 503
-
-    data = request.get_json() or {}
-    query = data.get("query", "").strip()
-    selected_category = data.get("category", None)
-    exclude_ids = data.get("exclude_ids", [])
-    is_find_another = bool(data.get("is_find_another", False))
-
-    if not query and not selected_category:
-        return jsonify({
-            "status": "error",
-            "message": "Please enter a story request or select a category to find a story."
-        }), 400
-
-    start_time = time.time()
-    try:
-        result = RECOMMENDER.recommend(
-            query=query,
-            selected_category=selected_category,
-            exclude_ids=exclude_ids,
-            is_find_another=is_find_another
-        )
-        elapsed_ms = round((time.time() - start_time) * 1000, 2)
-        result["latency_ms"] = elapsed_ms
-        return jsonify(result)
-
-    except Exception as e:
-        print(f"[!] Technical Recommendation Error: {e}", file=sys.stderr)
-        return jsonify({
-            "status": "error",
-            "message": "Something went wrong while finding your story. Please try again."
-        }), 500
-
-
-@app.route("/api/random", methods=["GET"])
-def get_random_story():
-    """Retrieves a random story, optionally filtered by category."""
-    global RECOMMENDER, MODEL_LOADED
-    if not MODEL_LOADED:
-        init_recommender()
-    if not MODEL_LOADED:
-        return jsonify({"status": "error", "message": "Model not loaded"}), 503
-
-    category = request.args.get("category", None)
-    df = RECOMMENDER.stories_df
-    if category:
-        cat_df = df[df['category'].str.lower() == category.lower()]
-        if not cat_df.empty:
-            df = cat_df
-
-    selected = df.sample(n=1).iloc[0]
     return jsonify({
         "status": "success",
-        "story": {
-            "id": str(selected["id"]),
-            "title": str(selected["title"]),
-            "category": str(selected["category"]),
-            "theme": str(selected["theme"]),
-            "setting": str(selected["setting"]),
-            "mood": str(selected["mood"]),
-            "keywords": str(selected["keywords"]),
-            "story_text": str(selected["story"]),
-            "word_count": int(selected.get("word_count", len(str(selected["story"]).split()))),
-            "reading_time_min": int(selected.get("reading_time_min", 1)),
-        },
-        "relevance_percentage": 100,
-        "why_this_story": [
-            {"type": "random", "label": "Random Pick", "detail": "Curated story from database"}
+        "engine": "LORE AI Story Generation Platform",
+        "ai_generation_available": gen_status.get("available", False),
+        "ai_provider": gen_status.get("provider", "None"),
+        "ai_model": gen_status.get("model", "None"),
+        "total_presets": len(CATEGORY_PRESETS),
+        "features": [
+            "AI Story Generation (LLM)",
+            "Genre Presets & Custom Natural Language Requests",
+            "Dynamic Length Calibration (~2 Pages Normal, Quick, Extended)",
+            "Audiobook Voice Narration (Web Speech API)",
+            "Anti-Repetition Session Memory",
+            "Cross-Platform Copy"
         ]
     })
 
 
-@app.route("/api/evaluation", methods=["GET"])
-def get_evaluation_metrics():
-    """Returns benchmark evaluation metrics."""
-    if os.path.exists(EVAL_PATH):
-        with open(EVAL_PATH, "r", encoding="utf-8") as f:
-            metrics = json.load(f)
-        return jsonify({"status": "success", "metrics": metrics})
-    else:
-        return jsonify({"status": "error", "message": "Evaluation results not yet generated"}), 404
-
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=False)
