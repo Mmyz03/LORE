@@ -19,7 +19,7 @@ LORE is an AI-powered story generation platform that creates unique stories base
 
 * HTML
 * CSS
-* JavaScript
+* JS
 
 **Backend**
 
